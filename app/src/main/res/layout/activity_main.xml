@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/frame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white_ffffff"
+    android:windowSoftInputMode="adjustResize|stateHidden">
+
+
+    <com.weike.customview.SketchpadView
+        android:id="@+id/record_surface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!--倒计时 录制 增减页 上下页-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/sketchpad_widget_top_width"
+        android:background="@color/gray_535353"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/exit"
+            android:layout_width="@dimen/sketchpad_widget_top_width"
+            android:layout_height="@dimen/sketchpad_widget_top_width"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:gravity="center"
+            android:src="@drawable/exit_2x" />
+
+        <ImageView
+            android:id="@+id/undo"
+            android:layout_width="@dimen/sketchpad_widget_top_width"
+            android:layout_height="@dimen/sketchpad_widget_top_width"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@+id/exit"
+            android:gravity="center"
+            android:src="@drawable/recall_2x" />
+
+        <ImageView
+            android:id="@+id/redo"
+            android:layout_width="@dimen/sketchpad_widget_top_width"
+            android:layout_height="@dimen/sketchpad_widget_top_width"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/sketchpad_widget_marginLeft"
+            android:layout_toRightOf="@+id/undo"
+            android:gravity="center"
+            android:src="@drawable/redo_2x" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/biaozhun"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/pen"
+                android:layout_width="@dimen/sketchpad_widget_top_width"
+                android:layout_height="@dimen/sketchpad_widget_top_width"
+                android:layout_weight="1"
+                android:src="@drawable/pen0" />
+
+            <ImageView
+                android:id="@+id/eraser"
+                android:layout_width="@dimen/sketchpad_widget_top_width"
+                android:layout_height="@dimen/sketchpad_widget_top_height"
+                android:layout_weight="1"
+                android:src="@drawable/eraser_2x" />
+
+
+            <ImageView
+                android:id="@+id/hand"
+                android:layout_width="@dimen/sketchpad_widget_top_width"
+                android:layout_height="@dimen/sketchpad_widget_top_width"
+                android:layout_weight="1"
+                android:src="@drawable/hand_2x" />
+
+            <ImageView
+                android:id="@+id/attachment"
+                android:layout_width="@dimen/sketchpad_widget_top_width"
+                android:layout_height="@dimen/sketchpad_widget_top_width"
+                android:layout_weight="1"
+                android:src="@drawable/attachment" />
+
+            <ImageView
+                android:id="@+id/pointer"
+                android:layout_width="@dimen/sketchpad_widget_top_width"
+                android:layout_height="@dimen/sketchpad_widget_top_width"
+                android:layout_weight="1"
+                android:src="@drawable/pointer_2x" />
+
+
+            <ImageView
+                android:id="@+id/what"
+                android:layout_width="@dimen/sketchpad_widget_top_width"
+                android:layout_height="@dimen/sketchpad_widget_top_width"
+                android:layout_weight="1"
+                android:src="@drawable/help2x" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/biaozhun"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+    <!--顶部控制栏-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent">
+
+        <Chronometer
+            android:id="@+id/chronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="45dp"
+            android:layout_toLeftOf="@id/record"
+            android:format="%s"
+            android:textColor="#FF0000"
+            android:textSize="15sp" />
+
+        <ImageButton
+            android:id="@+id/record"
+            android:layout_width="@dimen/sketchpad_record_width"
+            android:layout_height="@dimen/sketchpad_record_height"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/pause_2x" />
+
+        <ImageView
+            android:id="@+id/pre_pad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/last_2x" />
+
+        <ImageView
+            android:id="@+id/next_pad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/next_2x" />
+
+        <TextView
+            android:id="@+id/remove_pad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toStartOf="@+id/tv1"
+            android:drawableStart="@drawable/minus_2x"
+            android:text="1"
+            android:textColor="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/tv1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="/"
+            android:textColor="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/add_pad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@+id/tv1"
+            android:drawableEnd="@drawable/add_2x"
+            android:text="1"
+            android:textColor="@android:color/darker_gray" />
+    </RelativeLayout>
+
+
+</FrameLayout>
