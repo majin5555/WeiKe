@@ -1,0 +1,9 @@
+<resources>
+    <string name="angin_back">再按一次退出</string>
+    <string name="see_pic">查看图片</string>
+    <string name="use_time">使用权限1年</string>
+    <!--选择图片相关-->
+    <string name="select_picture_photograph">拍照</string>
+    <string name="select_picture_select_from_album">从相册选择</string>
+    <string name="select_picture_cancel">取消</string>
+</resources>

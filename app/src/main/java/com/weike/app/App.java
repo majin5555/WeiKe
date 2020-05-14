@@ -15,6 +15,24 @@ import java.util.ArrayList;
  * @desc:
  */
 public class App extends Application {
+
+    //双重检查锁
+    private static App singObj;
+
+    private App() {
+    }
+
+    public static App getSingleInstance() {
+        if (null == singObj) {
+            synchronized (App.class) {
+                if (null == singObj)
+                    singObj = new App();
+            }
+        }
+        return singObj;
+    }
+
+
     public static ArrayList<Activity> Alist = new ArrayList<Activity>();
 
     private FFmpeg fFmpeg;

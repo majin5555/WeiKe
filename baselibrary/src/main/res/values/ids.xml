@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="toolbar" type="id" />
+    <item name="tool_title" type="id" />
+    <item name="tool_left" type="id" />
+    <item name="tool_right" type="id" />
+    <item name="tv_null" type="id" />
+</resources>

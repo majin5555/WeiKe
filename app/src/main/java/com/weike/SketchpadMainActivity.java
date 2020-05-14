@@ -1,15 +1,12 @@
 package com.weike;
 
 import android.Manifest;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
@@ -18,17 +15,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codingending.popuplayout.PopupLayout;
+import com.weike.app.AppConfig;
 import com.weike.customview.SketchpadView;
-import com.weike.soundrecording.RecordingService;
 import com.weike.util.PermissionUtils;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import baseLibrary.activity.BaseActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -36,7 +33,7 @@ import butterknife.OnClick;
 /**
  * 视频录制
  */
-public class SketchpadMainActivity extends AppCompatActivity {
+public class SketchpadMainActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "SketchpadMainActivity";
 
     public static List<String> sNeedReqPermissions = new ArrayList<>();
@@ -96,6 +93,7 @@ public class SketchpadMainActivity extends AppCompatActivity {
 
 
     private WeakHandler handler;
+    private PopupLayout mExit;
 
 
     private class WeakHandler extends Handler {
@@ -112,8 +110,7 @@ public class SketchpadMainActivity extends AppCompatActivity {
                 switch (msg.what) {
                     case UPDATE_UI_CHRONOMETER:
                         chronometer.setVisibility(View.VISIBLE);
-                        Log.d(TAG, "UPDATE_UI_CHRONOMETER ");
-
+                        //            Log.d(TAG, "UPDATE_UI_CHRONOMETER ");
                         if (! isRecord) {
                             this.sendEmptyMessageDelayed(UPDATE_UI_STOP_CHRONOMETER, UPDATE_UI_DELAYED_TIME);
                         } else {
@@ -136,9 +133,22 @@ public class SketchpadMainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void initView() {
+        setContentView(R.layout.activity_main);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        init();
+    }
+
+
+    private void init() {
+        AppConfig.getInstance().init();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+
         handler = new WeakHandler(this);
 
         //首先判断当前的权限问题
@@ -159,12 +169,41 @@ public class SketchpadMainActivity extends AppCompatActivity {
         }
         ButterKnife.bind(this);
 
+
         chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
-                Log.d(TAG, " chronometer  " + chronometer.toString());
+                //    Log.d(TAG, " chronometer  " + chronometer.toString());
             }
         });
+        View view = View.inflate(SketchpadMainActivity.this, R.layout.layout_exit, null);
+        mExit = PopupLayout.init(SketchpadMainActivity.this, view);
+        view.findViewById(R.id.mcontinue).setOnClickListener(this);
+        view.findViewById(R.id.mrenounce).setOnClickListener(this);
+        view.findViewById(R.id.mcomplete).setOnClickListener(this);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.mcontinue:
+                Toast.makeText(this, "继续录制", Toast.LENGTH_SHORT).show();
+                recordVideo();
+                break;
+            case R.id.mrenounce:
+                Toast.makeText(this, "放弃录制", Toast.LENGTH_SHORT).show();
+                //  finish();
+                break;
+            case R.id.mcomplete:
+
+                sketchPadView.mergeVideo();
+                sketchPadView.getmMp4().clear();
+
+                //  Toast.makeText(this, "完成录制  " , Toast.LENGTH_SHORT).show();
+                break;
+        }
+        mExit.dismiss();
 
     }
 
@@ -172,7 +211,10 @@ public class SketchpadMainActivity extends AppCompatActivity {
     @OnClick({R.id.exit, R.id.undo, R.id.redo, R.id.pen, R.id.eraser, R.id.hand, R.id.attachment, R.id.pointer, R.id.what, R.id.chronometer, R.id.record, R.id.pre_pad, R.id.next_pad, R.id.remove_pad, R.id.add_pad})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+
             case R.id.exit:
+                if (isRecord) recordVideo();
+                mExit.show(PopupLayout.POSITION_LEFT);
                 break;
             case R.id.undo:
                 break;
@@ -197,8 +239,6 @@ public class SketchpadMainActivity extends AppCompatActivity {
             case R.id.chronometer:
                 break;
             case R.id.record:
-                isRecord = ! isRecord;
-                recordAudio();
                 recordVideo();
                 break;
             case R.id.pre_pad:
@@ -219,6 +259,7 @@ public class SketchpadMainActivity extends AppCompatActivity {
     boolean isRecord;
 
     private void recordVideo() {
+        isRecord = ! isRecord;
         if (isRecord) {
             sketchPadView.startRecord(this, isRecord);
             startRecord();
@@ -250,33 +291,10 @@ public class SketchpadMainActivity extends AppCompatActivity {
 
     private void stopTime() {
         rangeTime = SystemClock.elapsedRealtime() - chronometer.getBase();
-        Log.d(TAG, "stopTime   rangeTime" + rangeTime);
-
+        //Log.d(TAG, "stopTime   rangeTime" + rangeTime);
         handler.sendEmptyMessage(UPDATE_UI_STOP_CHRONOMETER);
         chronometer.setTextColor(Color.WHITE);
         chronometer.stop();
-    }
-
-    private void recordAudio() {
-
-        Intent intent = new Intent(this, RecordingService.class);
-        if (isRecord) {
-            //保持屏幕常亮
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-            String mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-            mFilePath += File.separator + "SoundRecorder";
-            File folder = new File(mFilePath);
-            if (! folder.exists()) {
-                //folder /SoundRecorder doesn't exist, create the folder
-                folder.mkdir();
-            }
-            // startService(intent);
-        } else {
-            //  stopService(intent);
-            //allow the screen to turn off again once recording is finished
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
     }
 
 
@@ -285,4 +303,12 @@ public class SketchpadMainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         mPermissionUtils.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/mcontinue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:text="继续录制"
+        android:layout_above="@+id/mrenounce"
+        android:textColor="@color/blue_4ba0ff"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/mrenounce"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:text="放弃录制"
+        android:textColor="@color/blue_4ba0ff"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/mcomplete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_below="@+id/mrenounce"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:text="完成录制"
+        android:textColor="@color/blue_4ba0ff"
+        android:textSize="20sp" />
+</RelativeLayout>

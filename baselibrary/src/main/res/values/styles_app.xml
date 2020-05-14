@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <style name="NoTitle">
+        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+
+    <!--Switch开关-->
+    <style name="My.TextAppearance" parent="@style/TextAppearance.AppCompat.Widget.Switch">
+        <item name="android:textSize">@dimen/sp_17</item>
+        <item name="android:textColor">@color/app_style</item>
+
+    </style>
+
+</resources>
