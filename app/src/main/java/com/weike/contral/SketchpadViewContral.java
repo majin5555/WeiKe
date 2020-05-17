@@ -13,7 +13,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 
 import com.weike.R;
@@ -139,6 +138,12 @@ public class SketchpadViewContral implements Runnable {
     public void setSketchpadViewMode(SketchpadView.MODE_SKETCHPAD mode) {
         sketchpadView.setSketchpadViewMode(mode);
 
+        if (mode== SketchpadView.MODE_SKETCHPAD.PEN) {
+            //((SketchpadMainActivity) context).getSketchContentRoot().bringToFront();
+
+        } else {
+
+        }
     }
 
     /**
@@ -176,14 +181,8 @@ public class SketchpadViewContral implements Runnable {
             Screentshot canvasSnapshot = sketchpadView.getCanvasSnapshot();
             if (canvasSnapshot != null) {
                 Log.d(TAG, "canvasSnapshot    " + canvasSnapshot);
-
-                scaleView.AddSkechtpadView(canvasSnapshot.getBitmap());
-                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(300, 200);
-                scaleView.setLayoutParams(params);
-                scaleView.setX(canvasSnapshot.getMinX());
-                scaleView.setY(canvasSnapshot.getMinY());
+                scaleView.addSkechtpadView(canvasSnapshot);
                 ((SketchpadMainActivity) context).getSketchPicContentRoot().addView(scaleView);
-               // scaleView.bringToFront();
                 Log.d(TAG, "((SketchpadMainActivity) context).getSketchContentRoot()  " + ((SketchpadMainActivity) context).getSketchContentRoot().getChildCount());
 
             } else {

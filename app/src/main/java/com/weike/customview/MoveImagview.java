@@ -2,19 +2,24 @@ package com.weike.customview;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.weike.R;
+import com.weike.actiity.SketchpadMainActivity;
+import com.weike.bean.Screentshot;
 
 import androidx.annotation.Nullable;
+
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 
 /**
@@ -22,102 +27,92 @@ import androidx.annotation.Nullable;
  */
 
 @SuppressLint("AppCompatCustomView")
-public class MoveImagview extends RelativeLayout {
+public class MoveImagview extends RelativeLayout implements View.OnTouchListener, View.OnClickListener {
+
     private static final String TAG = "MoveImagview";
 
-    private Context context;
-    private int     startX;
-    private int     startY;
-    private int     l;
-    private int     r;
-    private int     t;
-    private int     b;
+    private Context   context;
+    private int       startX;
+    private int       startY;
+    private int       l;
+    private int       r;
+    private int       t;
+    private int       b;
+    private ImageView mImg;
 
 
     /*构造*/
-    public MoveImagview(Context context, @
-            Nullable AttributeSet attrs) {
+    public MoveImagview(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
     }
 
     /*构造*/
     public MoveImagview(Context context) {
         super(context);
         this.context = context;
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
 
-        //        RelativeLayout.LayoutParams paramsT = new RelativeLayout.LayoutParams(300, 200);
-        //        this.setLayoutParams(paramsT);
-        this.setBackgroundColor(context.getResources().getColor(R.color.app_style));
-        //AddMaskView();
+        this.setLayoutParams(params);
+        addScreenView();
+        addDeleteView();
 
     }
 
+    private void addScreenView() {
+        mImg = new ImageView(context);
+        mImg.setBackgroundColor(context.getResources().getColor(R.color.app_style));
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(400, 300);
+        params.setMargins(10, 10, 10, 10);
+        mImg.setLayoutParams(params);
+       // mImg.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        mImg.setId(1);
+        this.addView(mImg);
+        mImg.setOnTouchListener(this);
+    }
 
-    /*添加遮罩*/
-    private void AddMaskView() {
-        /*正确答案 添加遮罩*/
-        LayoutParams paramsT = new LayoutParams(100, 100);
-        paramsT.addRule(RelativeLayout.CENTER_IN_PARENT);
+    /**
+     * 小X
+     */
+    private void addDeleteView() {
+        RelativeLayout.LayoutParams paramsT = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        paramsT.addRule(RelativeLayout.RIGHT_OF, mImg.getId());
+        paramsT.addRule(RelativeLayout.ALIGN_RIGHT, 5);
+
         ImageView imageViewT = new ImageView(context);
         imageViewT.setLayoutParams(paramsT);
-        imageViewT.setBackgroundResource(R.drawable.close_icon2x);
-        // this.addView(imageViewT);
-    }
-
-    ImageView imageViewT;
-
-    /*添加截图*/
-    public void AddSkechtpadView(Bitmap bitmap) {
-        /*正确答案 添加遮罩*/
-        LayoutParams paramsT = new LayoutParams(300, 200);
-        paramsT.addRule(RelativeLayout.CENTER_IN_PARENT);
-        imageViewT = new ImageView(context);
-        imageViewT.setLayoutParams(paramsT);
-        imageViewT.setImageBitmap(bitmap);
+        imageViewT.setImageResource(R.drawable.close_icon2x);
         this.addView(imageViewT);
+        imageViewT.setOnClickListener(this);
     }
 
-    //  private Bitmap  touchImg   = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-    //    public void setTouchImg(Bitmap canvasSnapshot) {
-    //      //  touchImg = canvasSnapshot;
-    //    }
-    //    public Bitmap getTouchImg() {
-    //     //   return touchImg;
-    //    }
-
-    private Matrix  matrix     = new Matrix();
-    private Matrix  matrix1    = new Matrix();
-    private Matrix  saveMatrix = new Matrix();
-    private float[] x          = new float[4];
-    private float[] y          = new float[4];
-    private int     screenWidth, screenHeight;
-    public              int     mode    = 0;
-    private             float   x_down  = 0;
-    private             float   y_down  = 0;
-    final public static int     DRAG    = 1;
-    final public static int     ZOOM    = 2;
-    private             float   initDis = 1f;
-    private             PointF  mid     = new PointF();
-    private             boolean flag    = false;
-
+    /**
+     * 添加截图
+     */
+    public void addSkechtpadView(Screentshot screentshot) {
+        mImg.setImageBitmap(screentshot.getBitmap());
+        setX(screentshot.getMinX());
+        setY(screentshot.getMinY());
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
 
-        //        canvas.save();
-        //        // 根据 matrix 来重绘新的view
-        //        if (touchImg != null)
-        //            canvas.drawBitmap(touchImg, matrix, null);
-        //        canvas.restore();
     }
 
-    private boolean isFirstDown;
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public void onClick(View v) {
+       // Toast.makeText(context, "删除。。。", Toast.LENGTH_SHORT).show();
+        ((SketchpadMainActivity) context).getSketchPicContentRoot().removeView(MoveImagview.this);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                this.bringToFront();
+                //  this.bringToFront();
                 // 初始化起点坐标
                 startX = (int) event.getRawX();
                 startY = (int) event.getRawY();
@@ -125,15 +120,7 @@ public class MoveImagview extends RelativeLayout {
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
 
-                //    saveMatrix.set(matrix);
-                // 初始的两个触摸点间的距离
-                //   initDis = spacing(event);
-                // 设置为缩放模式
-                //  mode = ZOOM;
-                // 多点触摸的时候 计算出中间点的坐标
-                // midPoint(mid, event);
                 break;
-
             case MotionEvent.ACTION_MOVE:
                 //  Log.d(TAG, " MoveImagview  startX  " + startX + "  startY " + startY);
 
@@ -143,41 +130,37 @@ public class MoveImagview extends RelativeLayout {
                 int dx = endX - startX;
                 int dy = endY - startY;
                 //                // 更新左上右下距离
-                l = this.getLeft() + dx;
-                r = this.getRight() + dx;
-                t = this.getTop() + dy;
-                b = this.getBottom() + dy;
-                //                /*获取拖动的中心点*/
-                //                float centerPointX = (((float) 1 / (float) 2) * this.getWidth()) + l;
-                //                float centerPointY = (((float) 1 / (float) 2) * getHeight()) + t;
+                l = MoveImagview.this.getLeft() + dx;
+                r = MoveImagview.this.getRight() + dx;
+                t = MoveImagview.this.getTop() + dy;
+                b = MoveImagview.this.getBottom() + dy;
 
-                // getParent().requestDisallowInterceptTouchEvent(true);
+                //  move(v, dx, dy);
+                getParent().requestDisallowInterceptTouchEvent(true);
                 layout(l, t, r, b);
-                Log.d(TAG, "  ");
 
-                // 重新初始化起点坐标
+                // 初始化起点坐标
                 startX = (int) event.getRawX();
                 startY = (int) event.getRawY();
+                Log.d(TAG, " mImg    " + this.getLeft());
+                //  Log.d(TAG, " mImg  getRight " + mImg.getLeft());
+                //  Log.d(TAG, " mImg  mImg.getTop() " + mImg.getTop());
 
                 break;
+            //TODO 有问题等待处理
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-                //TODO 有问题等待处理
-                //                ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                //                layoutParams.width = startX + imageViewT.getWidth();
-                //                layoutParams.height = startY + imageViewT.getHeight();
-                // setLayoutParams(layoutParams);
-                break;
+
             default:
                 break;
-
         }
         return true;
-
     }
 
 
-    //取两点的距离
+    /**
+     * 取两点的距离
+     */
     private float spacing(MotionEvent event) {
         try {
             float x = event.getX(0) - event.getX(1);

@@ -145,8 +145,8 @@ public class SketchpadView extends View implements IUndoRedoCommand {
 
         if (bmp == null) {
         }
-        ;//小手截屏代码
-        return new Screentshot(minX, minY, duplicateBitmap(bmp, minX, minY, maxX, maxY));
+        //小手截屏代码
+        return new Screentshot((maxX - minX) / 2, (maxY-minY) / 2, duplicateBitmap(bmp, minX, minY, maxX, maxY));
     }
 
 
@@ -187,12 +187,12 @@ public class SketchpadView extends View implements IUndoRedoCommand {
         bmpDest = Bitmap.createBitmap(bmpSrc, (int) left, (int) top, (int) (r_l), (int) (b_t));
         // }
 
-        if (bmpDest != null) {
-            Canvas canvas = new Canvas(bmpDest);
-            canvas.save();
-            canvas.clipRect((int) left, (int) top, (int) right, (int) bottom);
-            canvas.restore();
-        }
+        //        if (bmpDest != null) {
+        //            Canvas canvas = new Canvas(bmpDest);
+        //            canvas.save();
+        //            canvas.clipRect((int) left, (int) top, (int) right, (int) bottom);
+        //            canvas.restore();
+        //        }
 
         return bmpDest;
     }
@@ -227,7 +227,7 @@ public class SketchpadView extends View implements IUndoRedoCommand {
         if (mode_sketchpad == MODE_SKETCHPAD.PEN || mode_sketchpad == MODE_SKETCHPAD.EASER) {
             canvas.drawBitmap(bitmap, 0, 0, paint);
         } else if (mode_sketchpad == MODE_SKETCHPAD.HANLER) {
-            //  canvas.drawBitmap(touchImg, 0, 0, paint);
+
         }
     }
 
@@ -298,8 +298,8 @@ public class SketchpadView extends View implements IUndoRedoCommand {
         if (mode_sketchpad == MODE_SKETCHPAD.PEN || mode_sketchpad == MODE_SKETCHPAD.EASER) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                   // ClearMempry.ClearMempry(this.context);//清理内存
-                  //  DataCleanManager.cleanInternalCache(this.context);
+                    // ClearMempry.ClearMempry(this.context);//清理内存
+                    //  DataCleanManager.cleanInternalCache(this.context);
                     setStrokeType(m_strokeType);//绘制图形如果是画笔状态
                     minX = xTouch = event.getX();
                     minY = yTouch = event.getY();
