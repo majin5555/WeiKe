@@ -1,29 +1,24 @@
 package baseLibrary.activity;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.example.baselibrary.R;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import baseLibrary.dialog.PromptDialog;
 import baseLibrary.toast.ToastUtil;
@@ -34,7 +29,7 @@ import baseLibrary.util.StatusBarCompat;
  * @date: 2019/6/24$
  * @desc: 基础Activity
  */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends Activity {
     public final int               exitApp = - 1;
     private      SparseArray<View> mViews  = new SparseArray<View>();
     protected    Toolbar           toolbar;
@@ -67,19 +62,21 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityUtil.getInstance().addActivity(this);//将Activity添加到堆栈
         context = this;
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+        // getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //硬件加速
+        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
         //创建对象
         promptDialog = new PromptDialog(this);
         //设置自定义属性
         promptDialog.getDefaultBuilder().touchAble(false).round(3).loadingDuration(1000);
         initView();
         toolbar = getView(R.id.toolbar);
-        setStatusBar(toolbar);
+        //setStatusBar(toolbar);
+
         titleView = getView(R.id.tool_title);
         if (toolbar != null) {
             toolbar.setTitle("");
-            setSupportActionBar(toolbar);
+            //   setSupportActionBar(toolbar);
             toolbar.setOnMenuItemClickListener(onMenuItemClick);
         }
     }
@@ -110,8 +107,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void setStatusBar(Toolbar toolbar) {
-        //  StatusBarCompat.initWindowParameter(this);
-        StatusBarCompat.compat(this, getResources().getColor(R.color.app_style));
+        StatusBarCompat.initWindowParameter(this);
+        // StatusBarCompat.compat(this, getResources().getColor(R.color.app_style));
     }
 
     /** 显示Toast */
@@ -186,8 +183,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        hintKeyBoard();
-//        finishActivity();
+        //        hintKeyBoard();
+        //        finishActivity();
     }
 
     @Override
@@ -399,31 +396,5 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (titleView != null) {
             titleView.setText(res);
         }
-    }
-
-    /**
-     * 权限检查
-     */
-    public void checkPermission() {
-        boolean isGranted = true;
-        if (android.os.Build.VERSION.SDK_INT >= 23) {
-            if (this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                //如果没有写sd卡权限
-                isGranted = false;
-            }
-            if (this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                isGranted = false;
-            }
-            Log.i("cbs", "isGranted == " + isGranted);
-            if (! isGranted) {
-                this.requestPermissions(
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission
-                                .ACCESS_FINE_LOCATION,
-                                Manifest.permission.READ_EXTERNAL_STORAGE,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        102);
-            }
-        }
-
     }
 }

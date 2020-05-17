@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white_ffffff"
+
     android:windowSoftInputMode="adjustResize|stateHidden">
 
-
-    <com.weike.customview.SketchpadView
-        android:id="@+id/record_surface"
+    <!--自定义画板父布局 增减页 上下页-->
+    <FrameLayout
+        android:id="@+id/sketch_content_root"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
 
-    <!--倒计时 录制 增减页 上下页-->
+        <com.weike.customview.SketchpadView
+            android:id="@+id/sketch_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <FrameLayout
+            android:id="@+id/sketch_pic_content_root"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent" />
+
+    </FrameLayout>
+
+
+    <!--顶部控制栏-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/sketchpad_widget_top_width"
@@ -60,7 +73,7 @@
                 android:layout_width="@dimen/sketchpad_widget_top_width"
                 android:layout_height="@dimen/sketchpad_widget_top_width"
                 android:layout_weight="1"
-                android:src="@drawable/pen0" />
+                android:src="@drawable/pen2" />
 
             <ImageView
                 android:id="@+id/eraser"
@@ -78,18 +91,18 @@
                 android:src="@drawable/hand_2x" />
 
             <ImageView
-                android:id="@+id/attachment"
-                android:layout_width="@dimen/sketchpad_widget_top_width"
-                android:layout_height="@dimen/sketchpad_widget_top_width"
-                android:layout_weight="1"
-                android:src="@drawable/attachment" />
-
-            <ImageView
                 android:id="@+id/pointer"
                 android:layout_width="@dimen/sketchpad_widget_top_width"
                 android:layout_height="@dimen/sketchpad_widget_top_width"
                 android:layout_weight="1"
                 android:src="@drawable/pointer_2x" />
+
+            <ImageView
+                android:id="@+id/attachment"
+                android:layout_width="@dimen/sketchpad_widget_top_width"
+                android:layout_height="@dimen/sketchpad_widget_top_width"
+                android:layout_weight="1"
+                android:src="@drawable/attachment" />
 
 
             <ImageView
@@ -97,7 +110,8 @@
                 android:layout_width="@dimen/sketchpad_widget_top_width"
                 android:layout_height="@dimen/sketchpad_widget_top_width"
                 android:layout_weight="1"
-                android:src="@drawable/help2x" />
+                android:src="@drawable/help2x"
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView
@@ -108,7 +122,7 @@
 
     </RelativeLayout>
 
-    <!--顶部控制栏-->
+    <!--增加页面时调的sketch_content-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

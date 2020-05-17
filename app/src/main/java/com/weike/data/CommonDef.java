@@ -1,5 +1,5 @@
 package com.weike.data;
-//���һЩ�Ƚ�ͨ�õ���� ���ʴ�С ��Ƥ����С
+
 public class CommonDef {
 	public final static int LARGE_PEN_WIDTH = 15;
     public final static int MIDDLE_PEN_WIDTH = 10;

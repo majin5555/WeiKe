@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream;
 
 
 public class BitmapUtil {
-    public static void checkArgs(String filePath){
+    public static void checkArgs(String filePath) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(filePath, options);
@@ -35,7 +35,7 @@ public class BitmapUtil {
     }
 
     public static Bitmap decodeSampledBitmapFromFile(String filePath,
-                                                         int reqWidth, int reqHeight) {
+                                                     int reqWidth, int reqHeight) {
         // 第一次解析将inJustDecodeBounds设置为true，来获取图片大小
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -67,4 +67,40 @@ public class BitmapUtil {
         Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);// 把ByteArrayInputStream数据生成图片
         return bitmap;
     }
+
+
+    /**
+     * 获取视频某一帧
+     *
+     * @param
+     */
+
+//    public static Bitmap getThumbnail(String filePath) {
+//        return ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.MINI_KIND);
+//    }
+
+    //private static MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+
+    /** 截取缩略图 */
+//    public static Bitmap getThumbnail(String f) {
+//        retriever.setDataSource(f);
+//        String fileLength = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+//        Bitmap bitmap = decodeFrame(Long.parseLong(fileLength));
+//
+//        return bitmap;
+//    }
+
+    /**
+     * 获取视频某一帧
+     *
+     * @param timeMs 毫秒
+     */
+//    public static Bitmap decodeFrame(long timeMs) {
+//        if (retriever != null) {
+//            Log.d("majin", "  timeMs " + timeMs);
+//            Bitmap bitmap = BitmapUtil.compressImage(retriever.getFrameAtTime(timeMs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC));
+//            return bitmap;
+//        }
+//        return null;
+//    }
 }

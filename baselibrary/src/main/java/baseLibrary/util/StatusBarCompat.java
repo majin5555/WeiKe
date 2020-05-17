@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
@@ -79,7 +80,11 @@ public class StatusBarCompat {
 
 
     public static void compat(Activity activity, int statusColor) {
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = activity.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(statusColor);
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (statusColor != INVALID_VAL) {
                 activity.getWindow().setStatusBarColor(statusColor);
@@ -98,6 +103,9 @@ public class StatusBarCompat {
             statusBarView.setBackgroundColor(color);
             contentView.addView(statusBarView, lp);
         }
+
+
+
 
     }
 

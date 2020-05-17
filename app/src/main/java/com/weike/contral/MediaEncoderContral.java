@@ -1,10 +1,9 @@
-package com.weike.screenshot;
+package com.weike.contral;
 
 import android.app.Activity;
 import android.util.Log;
 
 import com.weike.BuildConfig;
-import com.weike.customview.SketchpadView;
 import com.weike.screenshot.encoder.MediaAudioEncoder;
 import com.weike.screenshot.encoder.MediaEncoder;
 import com.weike.screenshot.encoder.MediaMuxerWrapper;
@@ -17,7 +16,7 @@ import java.io.IOException;
  * @date: 2020/5/13$
  * @desc: 音视频 编码解码工具类
  */
-public class SoftInputSurface {
+public class MediaEncoderContral {
     private static final String TAG = "SoftInputSurface";
 
     private MediaMuxerWrapper mMuxer;
@@ -48,13 +47,19 @@ public class SoftInputSurface {
         this.mediaVideoEncoder = mediaVideoEncoder;
     }
 
-    private SketchpadView sketchPadView;
-    private Activity      activity;
 
+    private Activity             activity;
+    private SketchpadViewContral sketchpadViewContral;
 
-    public SoftInputSurface(Activity activity, SketchpadView sketchPadView) {
+    /**
+     * 构造方法初始化数据
+     *
+     * @param activity
+     * @param sketchpadViewContral
+     */
+    public MediaEncoderContral(Activity activity, SketchpadViewContral sketchpadViewContral) {
         this.activity = activity;
-        this.sketchPadView = sketchPadView;
+        this.sketchpadViewContral = sketchpadViewContral;
     }
 
 
@@ -64,16 +69,23 @@ public class SoftInputSurface {
             mMuxer = new MediaMuxerWrapper(".mp4");
             // for audio capturing
             mediaAudioEncoder = new MediaAudioEncoder(mMuxer, mMediaEncoderListener);
-            Log.d(TAG, "majin sketchPadView.getWidthSize()  " + sketchPadView.getWidthSize() + " sketchPadView.getHeightSize() " + sketchPadView.getHeightSize());
             /*判断width width是奇数报错 原因不详*/
             int width = 0;
-            if ((sketchPadView.getWidthSize() & 1) == 0) {
-                width = sketchPadView.getWidthSize();
-            } else {
-                width = sketchPadView.getWidthSize() - 1;
-            }
+            int height = 0;
+            int w = sketchpadViewContral.getSketchpadView().getWidthSize() % 16;
+            int h = sketchpadViewContral.getSketchpadView().getHeightSize() % 16;
+
+            width = sketchpadViewContral.getSketchpadView().getWidthSize() - (w);
+            height = sketchpadViewContral.getSketchpadView().getHeightSize() - (h);
+
+            Log.d(TAG, "  width  " + width);
+            Log.d(TAG, "   height  " + height);
+
+            Log.d(TAG, "   sketchpadViewContral.getSketchpadView().getWidthSize()  " + sketchpadViewContral.getSketchpadView().getWidthSize() + "  sketchpadViewContral.getSketchpadView().getHeightSize() " + sketchpadViewContral.getSketchpadView().getHeightSize());
             // for video capturing
-            mediaVideoEncoder = new MediaVideoEncoder(mMuxer, mMediaEncoderListener, width, sketchPadView.getHeightSize());
+            mediaVideoEncoder = new MediaVideoEncoder(mMuxer, mMediaEncoderListener, width, height);
+
+
             mMuxer.prepare();
             mMuxer.startRecording();
         } catch (IOException e) {
@@ -111,18 +123,23 @@ public class SoftInputSurface {
         if (BuildConfig.DEBUG) Log.d(TAG, "releasing encoder objects");
 
         /**让截图线程等待100毫秒*/
-        synchronized (sketchPadView.getCaptureBitmapThread()) {
+        synchronized (sketchpadViewContral.getCaptureBitmapThread()) {
             try {
-                sketchPadView.getCaptureBitmapThread().wait(100);
+                sketchpadViewContral.getCaptureBitmapThread().wait(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                Log.d(TAG, "等待100出错啦   " + e.getMessage());
             }
         }
+
         if (mMuxer != null) {
             mMuxer.stopRecording();
             mMuxer = null;
         }
     }
+
+
+
 
 
 }

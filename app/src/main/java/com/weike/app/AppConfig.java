@@ -39,11 +39,14 @@ public class AppConfig {
 
 
     //微课视频地址
-    public static final String PATH_VIDEO_ROOT = envConfig + File.separator + VIDEO + LECTURE;//微课视频地址
+    public static final String PATH_VIDEO_ROOT          = envConfig + File.separator + VIDEO + LECTURE;//微课视频地址
+    public static final String PATH_VIDEO_ROOT_ANDROIDQ = Environment.DIRECTORY_MOVIES + File.separator + WEIKE + LECTURE;
+
 
     //微课缩略图地址
     public static final String PATH_THUMBNAIL_ROOT_ANDROIDQ = Environment.DIRECTORY_DCIM + File.separator + WEIKE + LECTURE;
-    public static final String PATH_THUMBNAIL_ROOT          = WEIKE + LECTURE;
+    public static final String PATH_WEIKE_ROOT              = WEIKE + LECTURE;
+    public static final String PATH_THUMBNAIL_ROOT          = envConfig + File.separator + Environment.DIRECTORY_DCIM + File.separator + WEIKE + LECTURE;
 
 
     public void init() {
@@ -56,7 +59,15 @@ public class AppConfig {
         }
     }
 
-    public static String getPathRoot() {
+    public static String getPathVideoRoot() {
         return PATH_VIDEO_ROOT == null ? "" : PATH_VIDEO_ROOT;
+    }
+
+    public static String getPathThumbnailRootAndroidq() {
+        return PATH_THUMBNAIL_ROOT_ANDROIDQ == null ? "" : PATH_THUMBNAIL_ROOT_ANDROIDQ;
+    }
+
+    public static String getPathWeikeRoot() {
+        return PATH_WEIKE_ROOT == null ? "" : PATH_WEIKE_ROOT;
     }
 }

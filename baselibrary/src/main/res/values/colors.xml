@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="app_style">#5cb85c</color>
+    <color name="app_style">#1F6DED</color>
+    <color name="ac_videolist_bg">#313235</color>
 
     <color name="blue_1F6DED">#1F6DED</color>
     <color name="blue_0552fa">#0552fa</color>
