@@ -24,7 +24,7 @@
             android:id="@+id/tvtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-           android:layout_centerInParent="true"
+            android:layout_centerInParent="true"
             android:text="@string/videolist_title"
             android:textColor="@color/white_ffffff"
             android:textSize="22sp" />
@@ -36,9 +36,9 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:gravity="center"
-            android:textSize="@dimen/sp_16"
             android:text="@string/videolist_edit"
-            android:textColor="@color/white_ffffff" />
+            android:textColor="@color/white_ffffff"
+            android:textSize="@dimen/sp_14" />
     </RelativeLayout>
     <include layout="@layout/line" />
 
@@ -46,10 +46,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/SwipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         <ImageView
             android:id="@+id/attach"
             android:layout_width="50dp"
@@ -58,7 +65,6 @@
             android:layout_alignParentBottom="true"
             android:src="@drawable/xuanze2x" />
     </RelativeLayout>
-
 
 
 </LinearLayout>

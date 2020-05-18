@@ -218,8 +218,6 @@ public class SketchpadMainActivity extends BaseActivity implements View.OnClickL
 
         mContral.setSketchpadView(mCurrentSketchpadView);
         mergeVideoTask = new MergeVideoTask(mContral);
-
-
     }
 
     private void setAllTag() {

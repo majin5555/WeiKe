@@ -139,6 +139,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
+        android:visibility="invisible"
         android:src="@drawable/simple_player_iv_rotation"/>
 
     <ImageView
@@ -146,6 +147,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
+        android:visibility="invisible"
         android:src="@drawable/simple_player_icon_fullscreen_stretch"/>
 
 </LinearLayout>

@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import baseLibrary.activity.BaseActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,7 +37,7 @@ import butterknife.OnClick;
 /**
  * 视频列表
  */
-public class VideoListActivity extends BaseActivity {
+public class VideoListActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener {
     public static List<String> sNeedReqPermissions = new ArrayList<>();
 
     static {
@@ -55,11 +56,13 @@ public class VideoListActivity extends BaseActivity {
     private static final int REQUEST_CODE = 0;
 
     @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
+    RecyclerView       mRecyclerView;
     @BindView(R.id.attach)
-    ImageView    mAttach;
+    ImageView          mAttach;
     @BindView(R.id.edit)
-    TextView     mEdit;
+    TextView           mEdit;
+    @BindView(R.id.SwipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     private boolean isEdedit;
 
@@ -100,6 +103,7 @@ public class VideoListActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        swipeRefreshLayout.setOnRefreshListener(this);
         mediaDataVideos = MediaUtils.getAllMediaVideos(this);
 
         // 线性布局
@@ -131,13 +135,10 @@ public class VideoListActivity extends BaseActivity {
             }
         });
 
-        //        itemView点击事件监听
-        mAdapter.setOnItemClickListener(new VideoListRecyclerViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                MediaDataVideos mediaDataVideos = VideoListActivity.this.mediaDataVideos.get(position);
-                VideoActivity.startVideoActivity(VideoListActivity.this, 1000,mediaDataVideos);
-            }
+
+        mAdapter.setOnItemClickListener(position -> {
+            MediaDataVideos mediaDataVideos = VideoListActivity.this.mediaDataVideos.get(position);
+            VideoPayerActivity.startHPlayerActivity(VideoListActivity.this, 1000, mediaDataVideos);
         });
 
     }
@@ -165,8 +166,10 @@ public class VideoListActivity extends BaseActivity {
                 isEdedit = ! isEdedit;
                 if (isEdedit) {
                     mEdit.setText(R.string.videolist_delete);
+                   // mAttach.setVisibility(View.INVISIBLE);
                 } else {
                     mEdit.setText(R.string.videolist_edit);
+                  //  mAttach.setVisibility(View.VISIBLE);
                 }
 
                 if (deleteFlag()) {
@@ -230,4 +233,10 @@ public class VideoListActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void onRefresh() {
+        mediaDataVideos = MediaUtils.getAllMediaVideos(this);
+        mAdapter.setDataSource(mediaDataVideos);
+        swipeRefreshLayout.setRefreshing(false);
+    }
 }

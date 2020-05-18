@@ -1,19 +1,27 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.butterknife'
 android {
+    signingConfigs {
+        relase {
+            storeFile file('E:\\PROJECT_TEST\\WeiKe\\WEIKE.jks')
+            storePassword 'weike123456'
+            keyAlias = 'key'
+            keyPassword 'weike123456'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.weike"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
         ndk {
             // 设置支持的SO库架构
-            abiFilters 'armeabi', 'arm64-v8a', 'x86', 'armeabi-v7a', 'x86_64'
+            abiFilters 'armeabi', 'armeabi-v7a'//, 'arm64-v8a', 'x86', 'armeabi-v7a', 'x86_64'
         }
 
     }
@@ -34,9 +42,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation project(path: ':baselibrary')
-    implementation project(path: ':ijkplayerlibrary')
 
     //noinspection AnnotationProcessorOnCompilePath
     implementation 'com.jakewharton:butterknife:10.2.1'
@@ -44,8 +50,4 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
 
-//    implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
-//    implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
-//    implementation 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.8'
-//    implementation 'com.squareup:otto:1.3.8'
 }

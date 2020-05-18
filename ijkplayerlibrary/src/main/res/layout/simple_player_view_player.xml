@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
 
-    <com.example.ijkplayerlibrary.ijkPlayer.media.IjkVideoView
+    <ijkPlayer.media.IjkVideoView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
@@ -129,6 +129,7 @@
 
         <ProgressBar
             android:layout_width="50dp"
+            android:background="@color/Grey_50"
             android:layout_height="50dp"
             android:indeterminateBehavior="repeat"
             android:indeterminateOnly="true"/>

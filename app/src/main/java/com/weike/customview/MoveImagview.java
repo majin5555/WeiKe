@@ -60,12 +60,13 @@ public class MoveImagview extends RelativeLayout implements View.OnTouchListener
     }
 
     private void addScreenView() {
-        mImg = new ImageView(context);
+        mImg = new MyImageView(context);
+       // mImg = new ImageView(context);
         mImg.setBackgroundColor(context.getResources().getColor(R.color.app_style));
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(400, 300);
         params.setMargins(10, 10, 10, 10);
         mImg.setLayoutParams(params);
-       // mImg.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        // mImg.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         mImg.setId(1);
         this.addView(mImg);
         mImg.setOnTouchListener(this);
@@ -103,7 +104,7 @@ public class MoveImagview extends RelativeLayout implements View.OnTouchListener
 
     @Override
     public void onClick(View v) {
-       // Toast.makeText(context, "删除。。。", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(context, "删除。。。", Toast.LENGTH_SHORT).show();
         ((SketchpadMainActivity) context).getSketchPicContentRoot().removeView(MoveImagview.this);
     }
 
