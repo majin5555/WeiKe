@@ -97,6 +97,7 @@ public class Mp4ParserUtils {
             }
 
             Container out = new DefaultMp4Builder().build(mergeMovie);
+
             fos = new FileOutputStream(mergeVideoFile);
             fc = fos.getChannel();
             out.writeContainer(fc);

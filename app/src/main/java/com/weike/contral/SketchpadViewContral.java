@@ -29,7 +29,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 
 /**
  * @author: mj
@@ -40,7 +39,7 @@ import java.util.Locale;
 public class SketchpadViewContral implements Runnable {
     private static final String TAG = "SketchpadViewContral";
 
-    private final SimpleDateFormat mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US);
+    private final SimpleDateFormat mDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 
     private Context               context;
     private SketchpadMainActivity activity;
@@ -138,7 +137,7 @@ public class SketchpadViewContral implements Runnable {
     public void setSketchpadViewMode(SketchpadView.MODE_SKETCHPAD mode) {
         sketchpadView.setSketchpadViewMode(mode);
 
-        if (mode== SketchpadView.MODE_SKETCHPAD.PEN) {
+        if (mode == SketchpadView.MODE_SKETCHPAD.PEN) {
             //((SketchpadMainActivity) context).getSketchContentRoot().bringToFront();
 
         } else {
@@ -249,16 +248,14 @@ public class SketchpadViewContral implements Runnable {
      * 完成录制 合并所有视频片段
      * 视频和缩略图名称一致
      */
-    public void mergeVideo() {
+    public File mergeVideo() {
+        File mergeVideoFile = null;
         if (getmMp4().size() > 0) {
             String filename = getDateTimeString();
-            File mergeVideoFile = new File(AppConfig.getInstance().getPathVideoRoot() + filename + ".mp4");
+            mergeVideoFile = new File(AppConfig.getInstance().getPathVideoRoot() + filename + ".mp4");
             Mp4ParserUtils.getSingleInstance().mergeVideo(getmMp4(), mergeVideoFile);
-            /**保存合并的视频*/
-            MediaUtils.saveVideo(filename, context);
-            /**保存缩略图*/
-            saveThumbnail(filename);
         }
+        return mergeVideoFile;
     }
 
     /** 截取缩略图 */
@@ -271,8 +268,9 @@ public class SketchpadViewContral implements Runnable {
      *
      * @return
      */
+    final GregorianCalendar now = new GregorianCalendar();
+
     private final String getDateTimeString() {
-        final GregorianCalendar now = new GregorianCalendar();
         return mDateTimeFormat.format(now.getTime());
     }
 
@@ -285,7 +283,6 @@ public class SketchpadViewContral implements Runnable {
         do {
             if (mRecord) {
                 try {
-                    Thread.sleep(5);
                     /**截屏幕核心模块*/
                     View view = ((SketchpadMainActivity) context).getSketchContentRoot();
                     Bitmap bitmap = convertViewToBitmap(view, sketchpadView.getWidthSize(), sketchpadView.getHeightSize());

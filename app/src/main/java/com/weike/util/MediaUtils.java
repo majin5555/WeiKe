@@ -1,7 +1,6 @@
 package com.weike.util;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -69,7 +68,7 @@ public class MediaUtils {
         uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
         OutputStream outputStream = null;
         Log.d(TAG, "截取缩略图  的uri  " + uri);
-        // String filePathByUri = UriTool.getFilePathByUri(context, uri);
+        String filePathByUri = UriTool.getFilePathByUri(context, uri);
         // Log.d(TAG, "截取缩略图  的video filePathByUri  " + filePathByUri);
 
         try {
@@ -147,194 +146,8 @@ public class MediaUtils {
             }
             mCursor.close();
         }
-
-
-        //        int id = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
-        //        String thumbPath  = MediaStore.Images.Media
-        //                .EXTERNAL_CONTENT_URI
-        //                .buildUpon()
-        //                .appendPath(String.valueOf(mCursor.getInt(id))).build().toString();
-
     }
 
-    /**
-     * 保存视频文件
-     */
-    public static boolean saveVideo(String fileName, Context context) {
-        Intent intent = null;
-        ContentValues contentValues = new ContentValues();
-
-        contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
-        contentValues.put(MediaStore.Images.Media.DESCRIPTION, fileName);
-        //兼容Android Q和以下版本
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, AppConfig.PATH_VIDEO_ROOT_ANDROIDQ);
-        } else {
-            contentValues.put(MediaStore.Video.Media.DATA, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) + File.separator + AppConfig.PATH_WEIKE_ROOT + fileName);
-        }
-        contentValues.put(MediaStore.Video.VideoColumns.MIME_TYPE, "video/mp4");
-
-        Uri uri = context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
-        Log.d(TAG, "保存的视频 uri  " + uri);
-
-        if (intent == null) {
-            intent = new Intent();
-        }
-        intent.setAction(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        intent.setData(uri);
-        context.sendBroadcast(intent);
-
-        return true;
-    }
-
-    /**
-     * 查询视频
-     * <p>
-     * MediaStore.Video.Media.DISPLAY_NAME,//视频文件在sdcard的名称
-     * MediaStore.Video.Media.DURATION,//视频总时长
-     * MediaStore.Video.Media.SIZE,//视频的文件大小
-     * MediaStore.Video.Media.DATA,//视频的绝对地址
-     * MediaStore.Video.Media.ARTIST,//歌曲的演唱者
-     */
-
-
-    public static List<MediaDataVideos> selectVideos(Activity activity) {
-        List<MediaDataVideos> videoList = new ArrayList<>();
-        Uri mVideoUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-
-        String[] projection = {MediaStore.Video.Thumbnails._ID
-                , MediaStore.Video.Thumbnails.DATA
-                , MediaStore.Video.Media.DURATION
-                , MediaStore.Video.Media.SIZE
-                , MediaStore.Video.Media.DATE_ADDED
-                , MediaStore.Video.Media.DISPLAY_NAME
-                , MediaStore.Video.Media.DATE_MODIFIED};
-        //        //全部视频
-        //        String where = MediaStore.Images.Media.MIME_TYPE + "=? or "
-        //                + MediaStore.Video.Media.MIME_TYPE + "=? or "
-        //                + MediaStore.Video.Media.MIME_TYPE + "=? or "
-        //                + MediaStore.Video.Media.MIME_TYPE + "=? or "
-        //                + MediaStore.Video.Media.MIME_TYPE + "=? or "
-        //                + MediaStore.Video.Media.MIME_TYPE + "=? or "
-        //                + MediaStore.Video.Media.MIME_TYPE + "=? or "
-        //                + MediaStore.Video.Media.MIME_TYPE + "=? or "
-        //                + MediaStore.Video.Media.MIME_TYPE + "=?";
-        String[] whereArgs = {"video/mp4", "video/3gp", "video/aiv", "video/rmvb", "video/vob", "video/flv",
-                "video/mkv", "video/mov", "video/mpg"};
-
-
-        String selection = null;
-        String[] selectionArgs = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-
-        } else {
-            selection = MediaStore.Images.Media.MIME_TYPE + "=?";
-            selectionArgs = new String[]{"video/mp4"};
-        }
-        Cursor mCursor = activity.getContentResolver().query(mVideoUri, projection, selection, selectionArgs, MediaStore.Video.Media.DATE_ADDED + " DESC ");
-
-        if (mCursor != null) {
-            while (mCursor.moveToNext()) {
-                // 获取视频的路径
-                int videoId = mCursor.getInt(mCursor.getColumnIndex(MediaStore.Video.Media._ID));
-                String path;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    path = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                            .buildUpon()
-                            .appendPath(String.valueOf(videoId)).build().toString();
-                } else {
-                    path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Video.Media.DATA));
-                }
-                long duration = mCursor.getLong(mCursor.getColumnIndex(MediaStore.Video.Media.DURATION));
-                long size = mCursor.getLong(mCursor.getColumnIndex(MediaStore.Video.Media.SIZE)) / 1024; //单位kb
-                if (size < 0) {
-                    //某些设备获取size<0，直接计算
-                    //  Log.d("majin", "this video size < 0 " + path);
-                    size = new File(path).length() / 1024;
-                }
-                String displayName = mCursor.getString(mCursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME));
-                //用于展示相册初始化界面
-                int timeIndex = mCursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
-                long date = mCursor.getLong(timeIndex) * 1000;
-
-                Log.d(TAG, "视频路径查询 1 path   " + path  );
-
-                //需要判断当前文件是否存在  一定要加，不然有些文件已经不存在图片显示不出来。这里适配Android Q
-             //   synchronized (activity) {
-                    boolean fileIsExists;
-                    Log.d(TAG, " ------------------------------------0  Build.VERSION.SDK_INT " + Build.VERSION.SDK_INT);
-                    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
-                        Log.d(TAG, "视频路径查询 2 path   " + path + ".mp4");
-                        //  Log.d(TAG, " ------------------------------------1" + displayName);
-
-                        // fileIsExists = isContentUriExists(activity, videoContentUri);
-                        fileIsExists = fileIsExists(path + ".mp4");
-                        Log.d(TAG, " -------------------------------------2");
-                        if (fileIsExists(path + ".mp4") && fileIsExists(AppConfig.PATH_THUMBNAIL_ROOT + displayName + ".jpg")) {
-                            Log.d(TAG, " -------------------------------------3   缩略图");
-                            videoList.add(new MediaDataVideos(videoId, displayName, duration, size, date, path, UriTool.getVideoContentUri(activity, new File(path + ".mp4")), UriTool.getImageContentUri(activity, new File(AppConfig.PATH_THUMBNAIL_ROOT + displayName + ".jpg"))));
-                        } else {
-                            Log.d(TAG, " -------------------------------------4 文件不存在");
-                        }
-                    } else {
-                        fileIsExists = fileIsExists(path);
-                        if (fileIsExists) {
-                            // videoList.add(new MediaDataVideos(videoId, displayName, duration, size, date, path, Uri.parse(path), null));
-                        } else {
-                        }
-                    }
-                }
-            }
-            mCursor.close();
-      //  }
-        return videoList;
-    }
-
-    /**
-     * 根据媒体文件的ID来获取文件的Uri
-     *
-     * @param id
-     * @return
-     */
-    public String getMediaFileUriFromID(String id) {
-        return MediaStore.Files.getContentUri("external").buildUpon().appendPath(String.valueOf(id)).build().toString();
-    }
-
-    public static boolean isContentUriExists(Context context, Uri uri) {
-        if (null == context) {
-            return false;
-        }
-        ContentResolver cr = context.getContentResolver();
-        try {
-            AssetFileDescriptor afd = cr.openAssetFileDescriptor(uri, "r");
-            if (null == afd) {
-                return false;
-            } else {
-                try {
-                    afd.close();
-                } catch (IOException e) {
-                }
-            }
-        } catch (FileNotFoundException e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    //判断文件是否存在
-    public static boolean fileIsExists(String strFile) {
-        try {
-            File f = new File(strFile);
-            if (! f.exists()) {
-                return false;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-
-        return true;
-    }
 
     /**
      * 对文件进行写操作
@@ -368,6 +181,9 @@ public class MediaUtils {
         // Log.e(TAG, "deleteFile: " + deleteNum);
     }
 
+    /**
+     * 获取缩略图
+     */
     public static Bitmap getVideoThumbnail(String uri) {
         MediaMetadataRetriever retr = new MediaMetadataRetriever();
         retr.setDataSource(uri, new HashMap<String, String>());
@@ -375,5 +191,115 @@ public class MediaUtils {
         return bitmap;
     }
 
+
+    /** ------------------------------------------------------------------------------------------------ */
+    /**
+     * 按条件 查询所有视频
+     */
+    public static List<MediaDataVideos> getAllMediaVideos(Context content) {
+        List<MediaDataVideos> videoList = new ArrayList<>();
+        Cursor mCursor = null;
+        try {
+            Uri targetUrl = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+            String[] projection = new String[]{
+                    MediaStore.Video.Media.DATA,
+                    MediaStore.Video.Media.DISPLAY_NAME,
+                    MediaStore.Video.Media.DATE_ADDED,
+                    MediaStore.Video.Media._ID,
+                    MediaStore.Video.Media.MIME_TYPE,
+                    MediaStore.Video.Media.RELATIVE_PATH
+            };
+            String selection = null;
+            String[] selectionArgs = null;
+            String sortOrder = MediaStore.Video.Media.DATE_MODIFIED + " DESC";
+            // Log.d(TAG, "Android   Build.VERSION.SDK_INT  ---------  " + Build.VERSION.SDK_INT);
+            //TODO  兼容Android Q和以下版本
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                selection = MediaStore.Video.Media.RELATIVE_PATH + "=? ";
+                selectionArgs = new String[]{AppConfig.PATH_VIDEO_ROOT_ANDROIDQ};
+                mCursor = content.getContentResolver().query(targetUrl, projection, selection, selectionArgs, sortOrder);
+
+            } else {
+                selection = MediaStore.Video.Media.DATA + " like '%" + AppConfig.PATH_VIDEO_ROOT + "%'";
+                selectionArgs = null;
+                mCursor = content.getContentResolver().query(targetUrl, null, selection, selectionArgs, sortOrder);
+            }
+
+            if (mCursor != null && mCursor.moveToFirst()) {
+                do {
+                    int videoId = mCursor.getInt(mCursor.getColumnIndex(MediaStore.Video.Media._ID));
+                    //   Log.d(TAG, "videoId ---------  " + videoId);
+                    // 获取视频的路径
+                    String filePath = mCursor.getString(mCursor.getColumnIndex(MediaStore.Video.Media.DATA));
+                    //   Log.d(TAG, "filePath ---------  " + filePath);
+                    String displayName = mCursor.getString(mCursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME));
+                    //    Log.d(TAG, "size  displayName---------  " + displayName);
+                    //   String albumPath = mCursor.getString(mCursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
+                    //  Log.d(TAG, "size  albumPath---------  " + albumPath);
+                    //     long duration = mCursor.getLong(mCursor.getColumnIndex(MediaStore.Video.Media.DURATION));
+                    //     Log.d(TAG, "size  duration---------  " + duration);
+                    int timeIndex = mCursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
+                    long date = mCursor.getLong(timeIndex) * 1000;
+                    Log.d(TAG, "uriVideo date ---------  " + date);
+                    Uri uriVideo = Uri.parse("content://media/external/video/media/" + videoId);
+                    //   Log.d(TAG, "uriVideo uri ---------  " + uriVideo);
+                    videoList.add(new MediaDataVideos(videoId, displayName, date, filePath, uriVideo));
+
+                } while (mCursor.moveToNext());
+            }
+        } catch (Exception e) {
+            //Log.d(TAG, "-------------------5");
+            e.printStackTrace();
+        } finally {
+            // Log.d(TAG, "-------------------6");
+            try {
+                if (mCursor != null) {
+                    mCursor.close();
+                }
+            } catch (Exception e) {
+            }
+        }
+        Log.d("VideoListActivity", "videoList  " + videoList);
+        return videoList;
+    }
+
+    /**
+     * 数显系统视频文件
+     */
+    public static boolean flushVideo(File file, Context context) {
+        Intent intent = null;
+        ContentValues contentValues = new ContentValues();
+        // Log.d("majin", "file.getName() " + file.getName());
+        //兼容Android Q和以下版本
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, AppConfig.PATH_VIDEO_ROOT_ANDROIDQ);
+        } else {
+            contentValues.put(MediaStore.Video.Media.DATA, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) + File.separator + AppConfig.PATH_WEIKE_ROOT + file.getName());
+        }
+
+        contentValues.put(MediaStore.Video.Media.TITLE, file.getName());
+        contentValues.put(MediaStore.Video.Media.DESCRIPTION, file.getName());
+        contentValues.put(MediaStore.Video.Media.DISPLAY_NAME, file.getName());
+        contentValues.put(MediaStore.Video.VideoColumns.MIME_TYPE, "video/3gp");
+        contentValues.put(MediaStore.Video.Media.DATA, file.getAbsolutePath());
+        contentValues.put(MediaStore.Video.Media.SIZE, Long.valueOf(file.length()));
+        //        contentValues.put("datetaken", Long.valueOf(paramLong));
+        //        contentValues.put("date_modified", Long.valueOf(paramLong));
+        //        contentValues.put("date_added", Long.valueOf(paramLong));
+
+        Log.d(TAG, "保存的视频 长度  " + Long.valueOf(file.length()));
+        Uri uri = context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues);
+        //    Log.d(TAG, "保存的视频 uri  " + uri);
+
+        if (intent == null) {
+            intent = new Intent();
+        }
+        intent.setAction(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        intent.setData(uri);
+        context.sendBroadcast(intent);
+        return true;
+    }
+
+    /**------------------------------------------------------------------------------------------------*/
 
 }

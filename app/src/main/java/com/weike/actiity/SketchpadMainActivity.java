@@ -1,13 +1,11 @@
 package com.weike.actiity;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,13 +24,11 @@ import com.weike.app.AppConfig;
 import com.weike.contral.SketchpadViewContral;
 import com.weike.customview.CommomDialog;
 import com.weike.customview.SketchpadView;
-import com.weike.util.PermissionUtils;
+import com.weike.util.MediaUtils;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 
-import androidx.annotation.NonNull;
 import baseLibrary.activity.BaseActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,17 +40,6 @@ import butterknife.OnClick;
 public class SketchpadMainActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "SketchpadMainActivity";
 
-    public static List<String> sNeedReqPermissions = new ArrayList<>();
-
-    static {
-        sNeedReqPermissions.add(Manifest.permission.CAMERA);
-        sNeedReqPermissions.add(Manifest.permission.CAMERA);
-        sNeedReqPermissions.add(Manifest.permission.RECORD_AUDIO);
-        sNeedReqPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
-
-    private             PermissionUtils mPermissionUtils;
-    public static final int             PERMISSION_RQUEST_CODE = 100;
 
     /** 延迟时间 */
     public static final int DELAYED_TIME           = 100;
@@ -124,17 +109,18 @@ public class SketchpadMainActivity extends BaseActivity implements View.OnClickL
     SketchpadView sketchpadView;
     @BindView(R.id.sketch_content_root)
     FrameLayout   sketchContentRoot;
+
     public FrameLayout getSketchPicContentRoot() {
         return sketchPicContentRoot;
     }
 
     /** 屏幕截图存放的viewRoot */
     @BindView(R.id.sketch_pic_content_root)
-    FrameLayout   sketchPicContentRoot;
+    FrameLayout sketchPicContentRoot;
+
     public FrameLayout getSketchContentRoot() {
         return sketchContentRoot;
     }
-
 
 
     private TextView       mTvComplete;
@@ -248,22 +234,6 @@ public class SketchpadMainActivity extends BaseActivity implements View.OnClickL
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         handler = new WeakHandler(this);
         setAllTag();
-        //首先判断当前的权限问题
-        mPermissionUtils = new PermissionUtils(this);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mPermissionUtils.request(sNeedReqPermissions, PERMISSION_RQUEST_CODE, new PermissionUtils.CallBack() {
-                @Override
-                public void grantAll() {
-                    //Toast.makeText(SketchpadMainActivity.this, "获取了全部权限", Toast.LENGTH_SHORT).show();
-
-                }
-
-                @Override
-                public void denied() {
-                    //Toast.makeText(SketchpadMainActivity.this, "有权限未获取", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
 
 
         chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
@@ -476,7 +446,7 @@ public class SketchpadMainActivity extends BaseActivity implements View.OnClickL
     }
 
 
-    class MergeVideoTask extends AsyncTask<String, Integer, String> {
+    class MergeVideoTask extends AsyncTask<String, Integer, File> {
         SketchpadViewContral sk;
 
         public MergeVideoTask(SketchpadViewContral sk) {
@@ -485,10 +455,10 @@ public class SketchpadMainActivity extends BaseActivity implements View.OnClickL
 
         @SuppressLint("WrongThread")
         @Override
-        protected String doInBackground(String... strings) {
-            sk.mergeVideo();
+        protected File doInBackground(String... strings) {
+            File mergeVideoFile = sk.mergeVideo();
             sk.getmMp4().clear();
-            return "合成成功";
+            return mergeVideoFile;
 
         }
 
@@ -499,19 +469,15 @@ public class SketchpadMainActivity extends BaseActivity implements View.OnClickL
 
 
         @Override
-        protected void onPostExecute(String result) {
-            showDialog(result);
+        protected void onPostExecute(File result) {
+            /**保存合并的视频*/
+            MediaUtils.flushVideo(result, SketchpadMainActivity.this);
+            showDialog("视频合成成功");
             setResult(RESULT_OK);
             finishActivity();
         }
     }
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        mPermissionUtils.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
 
     @Override
     protected void onDestroy() {

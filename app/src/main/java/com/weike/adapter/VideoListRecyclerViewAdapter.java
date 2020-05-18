@@ -1,7 +1,7 @@
 package com.weike.adapter;
 
 import android.content.Context;
-import android.util.Log;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +9,11 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.weike.R;
 import com.weike.bean.MediaDataVideos;
-import com.weike.util.ImageLoaderManager;
 
+import java.io.File;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -48,7 +49,7 @@ public class VideoListRecyclerViewAdapter extends RecyclerView.Adapter<VideoList
     }
 
 
-    public void setDataSource( List<MediaDataVideos> mediaDataVideos) {
+    public void setDataSource(List<MediaDataVideos> mediaDataVideos) {
         this.mediaDataVideos = mediaDataVideos;
         notifyDataSetChanged();
     }
@@ -83,9 +84,12 @@ public class VideoListRecyclerViewAdapter extends RecyclerView.Adapter<VideoList
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int position) {
 
         //  Log.d(TAG, " mediaDataVideos.get(position).getPath() " + mediaDataVideos.get(position).getPath());
-        Log.d(TAG, "显示的缩略图  uri  " + mediaDataVideos.get(position).getThumbnailUri());
-        ImageLoaderManager.loadImage(mContext, mediaDataVideos.get(position).getThumbnailUri(), myViewHolder.mIv);
-      //  Bitmap videoThumbnail = MediaUtils.getVideoThumbnail(UriTool.getFilePathByUri(mContext,mediaDataVideos.get(position).getThumbnailUri()));
+       // Log.d(TAG, "显示的缩略图  uri  " + mediaDataVideos.get(position).getThumbnailUri());
+        //  ImageLoaderManager.loadImage(mContext, mediaDataVideos.get(position).getThumbnailUri(), myViewHolder.mIv);
+
+        Glide.with(mContext).load(Uri.fromFile(new File(mediaDataVideos.get(position).getPath()))).into(myViewHolder.mIv);
+
+        //  Bitmap videoThumbnail = MediaUtils.getVideoThumbnail(UriTool.getFilePathByUri(mContext,mediaDataVideos.get(position).getThumbnailUri()));
         //Log.d(TAG, "显示的缩略图  videoThumbnail" + videoThumbnail);
 
 
@@ -163,14 +167,9 @@ public class VideoListRecyclerViewAdapter extends RecyclerView.Adapter<VideoList
     /**
      * ItemView点击事件回调接口
      */
-    interface OnItemClickListener {
+    public interface OnItemClickListener {
         void onItemClick(int position);
     }
 
-    /**
-     * ItemViewcheckbox点击事件回调接口
-     */
-    interface OnItemCheckboxClickListener {
-        void onItemCheckboxClick(int position);
-    }
+
 }

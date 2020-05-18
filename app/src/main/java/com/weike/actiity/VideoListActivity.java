@@ -1,8 +1,10 @@
 package com.weike.actiity;
 
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,9 +18,12 @@ import com.weike.adapter.VideoListRecyclerViewAdapter;
 import com.weike.bean.MediaDataVideos;
 import com.weike.customview.CommomDialog;
 import com.weike.util.MediaUtils;
+import com.weike.util.PermissionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -32,6 +37,18 @@ import butterknife.OnClick;
  * 视频列表
  */
 public class VideoListActivity extends BaseActivity {
+    public static List<String> sNeedReqPermissions = new ArrayList<>();
+
+    static {
+        sNeedReqPermissions.add(Manifest.permission.CAMERA);
+        sNeedReqPermissions.add(Manifest.permission.CAMERA);
+        sNeedReqPermissions.add(Manifest.permission.RECORD_AUDIO);
+        sNeedReqPermissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        sNeedReqPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private             PermissionUtils mPermissionUtils;
+    public static final int             PERMISSION_RQUEST_CODE = 100;
 
     private static final String TAG = "VideoListActivity";
 
@@ -46,7 +63,6 @@ public class VideoListActivity extends BaseActivity {
 
     private boolean isEdedit;
 
-
     private VideoListRecyclerViewAdapter mAdapter;
     private List<MediaDataVideos>        mediaDataVideos;
     private CommomDialog                 commomDialog;
@@ -56,15 +72,35 @@ public class VideoListActivity extends BaseActivity {
     public void initView() {
         setContentView(R.layout.activity_videolist);
         ButterKnife.bind(this);
+        //首先判断当前的权限问题
+        mPermissionUtils = new PermissionUtils(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mPermissionUtils.request(sNeedReqPermissions, PERMISSION_RQUEST_CODE, new PermissionUtils.CallBack() {
+                @Override
+                public void grantAll() {
+                    //Toast.makeText(SketchpadMainActivity.this, "获取了全部权限", Toast.LENGTH_SHORT).show();
+
+                }
+
+                @Override
+                public void denied() {
+                    //Toast.makeText(SketchpadMainActivity.this, "有权限未获取", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mPermissionUtils.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mediaDataVideos = MediaUtils.selectVideos(VideoListActivity.this);
-        Log.d(TAG, " mediaDataVideos  " + mediaDataVideos.size());
-
+        mediaDataVideos = MediaUtils.getAllMediaVideos(this);
 
         // 线性布局
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
@@ -96,12 +132,14 @@ public class VideoListActivity extends BaseActivity {
         });
 
         //        itemView点击事件监听
-        //        //mAdapter.setOnItemClickListener(new VideoListRecyclerViewAdapter.OnItemClickListener() {
-        //            @Override
-        //            public void onItemClick(int position) {
-        //                Toast.makeText(VideoListActivity.this, "第" + position + "数据被点击", Toast.LENGTH_SHORT).show();
-        //            }
-        //        });
+        mAdapter.setOnItemClickListener(new VideoListRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                MediaDataVideos mediaDataVideos = VideoListActivity.this.mediaDataVideos.get(position);
+                VideoActivity.startVideoActivity(VideoListActivity.this, 1000,mediaDataVideos);
+            }
+        });
+
     }
 
     /**
@@ -173,7 +211,7 @@ public class VideoListActivity extends BaseActivity {
         for (int i = 0; i < mediaDataVideos.size(); i++) {
             if (mediaDataVideos.get(i).isDelete()) {
                 MediaUtils.deleteFile(context, mediaDataVideos.get(i).getVideoUri());
-                MediaUtils.deleteFile(context, mediaDataVideos.get(i).getThumbnailUri());
+                //  MediaUtils.deleteFile(context, mediaDataVideos.get(i).getThumbnailUri());
                 mediaDataVideos.remove(mediaDataVideos.get(i));
             }
         }
@@ -185,8 +223,8 @@ public class VideoListActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && requestCode == RESULT_OK) {
-            Log.d(TAG, " onActivityResult  ");
-            mediaDataVideos = MediaUtils.selectVideos(VideoListActivity.this);
+            mediaDataVideos = MediaUtils.getAllMediaVideos(this);
+            Log.d(TAG, "2 mediaDataVideos  onActivityResult  " + mediaDataVideos);
             mAdapter.setDataSource(mediaDataVideos);
             // Log.d(TAG, " mediaDataVideos  " + mediaDataVideos.toString());
         }

@@ -11,13 +11,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
-        <activity android:name=".temp.MainActivity">
-            <!--            <intent-filter>-->
-            <!--                <action android:name="android.intent.action.MAIN" />-->
 
-            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
-            <!--            </intent-filter>-->
-        </activity>
+        <!--
+            <activity android:name=".temp.MainActivity">
+                &lt;!&ndash;            <intent-filter>&ndash;&gt;
+                &lt;!&ndash;                <action android:name="android.intent.action.MAIN" />&ndash;&gt;
+
+                &lt;!&ndash;                <category android:name="android.intent.category.LAUNCHER" />&ndash;&gt;
+                &lt;!&ndash;            </intent-filter>&ndash;&gt;
+            </activity>
+        -->
         <activity
             android:name=".actiity.VideoListActivity"
             android:hardwareAccelerated="true"
@@ -42,28 +45,42 @@
             android:screenOrientation="landscape"
             android:theme="@style/FullscreenTheme"
             android:windowSoftInputMode="adjustPan|stateHidden"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="LockedOrientationActivity" />
 
+        <activity
+            android:name=".actiity.VideoActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/FullscreenTheme"
+            tools:ignore="LockedOrientationActivity" />
 
-        </activity>
-        <!-- 录制音频 -->
+        <activity
+            android:name=".actiity.HPlayerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".videoplayer.OriginPlayerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".videoplayer.PlayerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"></activity> <!-- 录制音频 -->
         <service android:name=".soundrecording.RecordingService" />
     </application>
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!-- 录像的权限-->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!--写内存卡的权限-->
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <!--打开照相机的权限-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 录像的权限 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 写内存卡的权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 打开照相机的权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 创建文件的权限 -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <!--创建文件的权限-->
     <uses-permission
         android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-permission
+        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+        tools:ignore="ProtectedPermissions" />
 
 </manifest>
