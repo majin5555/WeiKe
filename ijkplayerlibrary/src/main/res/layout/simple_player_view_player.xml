@@ -129,8 +129,8 @@
 
         <ProgressBar
             android:layout_width="50dp"
-            android:background="@color/Grey_50"
             android:layout_height="50dp"
+            android:theme="@style/Widget.AppCompat.ProgressBar"
             android:indeterminateBehavior="repeat"
             android:indeterminateOnly="true"/>
         <TextView

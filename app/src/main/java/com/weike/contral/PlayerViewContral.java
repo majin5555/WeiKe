@@ -337,6 +337,9 @@ public class PlayerViewContral {
                         sendMessageDelayed(msg, 1000 - (pos % 1000));
                         updatePausePlay();
                     }
+                    //                    if (((TextView) query.id(R.id.app_video_currentTime_left)).getText().equals("")) {
+                    //
+                    //                    }
                     break;
                 /**重新去播放*/
                 case MESSAGE_RESTART_PLAY:
@@ -685,13 +688,14 @@ public class PlayerViewContral {
                 return true;
             }
         });
-
+        //播放完成
         videoView.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(IMediaPlayer iMediaPlayer) {
                 mActivity.finish();
             }
         });
+        //播放错误
         videoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(IMediaPlayer iMediaPlayer, int i, int i1) {
@@ -1666,7 +1670,7 @@ public class PlayerViewContral {
     /**
      * 界面方向改变是刷新界面
      */
-    private void doOnConfigurationChanged(final boolean portrait) {
+    public PlayerViewContral doOnConfigurationChanged(final boolean portrait) {
         if (videoView != null && ! isOnlyFullScreen) {
             mHandler.post(new Runnable() {
                 @Override
@@ -1684,6 +1688,7 @@ public class PlayerViewContral {
             });
             orientationEventListener.enable();
         }
+        return this;
     }
 
 
@@ -1815,6 +1820,10 @@ public class PlayerViewContral {
             query.id(R.id.app_video_freeTie).visible();
             pausePlay();
         } else {
+            /**强制处理播放完成*/
+            if (generateTime(position).equals(generateTime(duration))) {
+                mActivity.finish();
+            }
             query.id(R.id.app_video_currentTime).text(generateTime(position));
             query.id(R.id.app_video_currentTime_full).text(generateTime(position));
             query.id(R.id.app_video_currentTime_left).text(generateTime(position));

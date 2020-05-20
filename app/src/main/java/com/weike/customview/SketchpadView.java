@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.weike.actiity.SketchpadMainActivity;
 import com.weike.bean.Screentshot;
 import com.weike.contral.Circlectl;
 import com.weike.contral.EraserCtl;
@@ -37,6 +38,46 @@ import androidx.annotation.Nullable;
 
 public class SketchpadView extends View implements IUndoRedoCommand {
     private static final String TAG = "SketPadView";
+
+
+    /***************************************************************/
+    private int widthSize;//画板的宽
+
+    public int getWidthSize() {
+        return widthSize;
+    }
+
+    private int heightSize;//画板的高
+
+    public int getHeightSize() {
+        return heightSize;
+    }
+
+    private Bitmap   bitmap;//整个画板显示的位图
+    private Paint    paint;//画笔
+    private Canvas   canvas = new Canvas();//画板的画布;//画板的画布
+    private int      xTouch = 0;//移动的位置
+    private int      yTouch = 0;
+    private Activity context;
+    private int      minX, minY, maxX, maxY;
+
+
+    private             ISketchpadDraw m_curTool       = null;   //接口（绘制各种图形时都继承了接口）
+    public static final int            STROKE_PEN      = 1;
+    public static final int            STROKE_ERASER   = 2;
+    public static final int            STROKE_PLYGON   = 3;
+    public static final int            STROKE_RECT     = 4;
+    public static final int            STROKE_CIRCLE   = 5;
+    public static final int            STROKE_OVAL     = 6;
+    public static final int            STROKE_LINE     = 7;
+    public static final int            STROKE_SPRAYGUN = 8;
+    public static final int            STROKE_PAINTPOT = 9;
+    private             int            m_strokeType    = STROKE_PEN;   //  画笔状态
+
+    private static int m_strokeColor = Color.RED;   //画笔颜色红色
+    private static int m_penSize     = CommonDef.SMALL_PEN_WIDTH;// 画笔尺寸（默认为6）
+    private static int m_eraserSize  = CommonDef.LARGE_ERASER_WIDTH;   //橡皮默认宽度
+
     /***************************************************************/
 
     /**
@@ -52,54 +93,31 @@ public class SketchpadView extends View implements IUndoRedoCommand {
     /** 设置画板模式 */
     public void setSketchpadViewMode(MODE_SKETCHPAD mode) {
         mode_sketchpad = mode;
+        if (mode_sketchpad == MODE_SKETCHPAD.PEN) {
+            if (context!=null)
+            ((SketchpadMainActivity) context).getSketchContentRoot().bringChildToFront(this);
+        } else if (mode_sketchpad == MODE_SKETCHPAD.EASER) {
+
+        } else if (mode_sketchpad == MODE_SKETCHPAD.HANLER) {
+            bringToFront();
+            minX = minY = maxX = maxY = 0;
+        } else if (mode_sketchpad == MODE_SKETCHPAD.PONIT) {
+            minX = minY = maxX = maxY = 0;
+        }
     }
 
     /***************************************************************/
 
-
-    /**
-     * 枚举类
-     * 模式 NONE：无   NOMAL 正常可画
-     */
-    public enum MODE_PEN {
-        NONE, NOMAL
-    }
-
-    /**
-     * 获取铅笔模式
-     */
-    public MODE_PEN modePen = MODE_PEN.NOMAL;// 默认模式
-
-
-    private int widthSize;//画板的宽
-    private int heightSize;//画板的高
-
-    public int getWidthSize() {
-        return widthSize;
-    }
-
-    public int getHeightSize() {
-        return heightSize;
-    }
-
-    private Bitmap   bitmap;//整个画板显示的位图
-    private Paint    paint;//画笔
-    private Canvas   canvas = new Canvas();//画板的画布;//画板的画布
-    private float    xTouch = 0;//移动的位置
-    private float    yTouch = 0;
-    private Activity context;
 
     public SketchpadView(Context context) {
         super(context);
         this.context = (Activity) context;
     }
 
-
     public void setSketchpadViewContral(SketchpadViewContral sketchpadViewContral) {
         /**初始化画笔*/
         paint = sketchpadViewContral.getPaint();
         initData();
-
     }
 
     public SketchpadView(Context context, @Nullable AttributeSet attrs) {
@@ -110,92 +128,6 @@ public class SketchpadView extends View implements IUndoRedoCommand {
         super(context, attrs, defStyleAttr);
     }
 
-    private float minX, minY, maxX, maxY;//浮点行的最小X ，Y坐标
-
-    //更新当前的最大最小X Y(传入发的是当前坐标X Y)
-    private void updateMaxValue(float x, float y) {
-
-        if (this.maxX < x) {
-            this.maxX = x;
-        }
-        if (this.maxY < y) {
-            this.maxY = y;
-        }
-
-        if (this.minX > x) {
-            this.minX = x;
-        }
-        if (this.minY > y) {
-            this.minY = y;
-        }
-
-
-    }
-
-    /** 获取切图（自己操作在屏幕上操作的） */
-    public Screentshot getCanvasSnapshot() {
-
-        if (minX == 0 || minY == 0 || maxX == 0 || maxY == 0) {//或||有一个成立则成立 全为false 则为false
-            return null;
-        }
-        setDrawingCacheEnabled(false);//销毁原来的cache(可以清理开启时的申请的内存)
-        setDrawingCacheEnabled(true);//开启cache
-        buildDrawingCache(true);//生成cache
-        Bitmap bmp = getDrawingCache(true);//获得可画视图的缓存
-
-        if (bmp == null) {
-        }
-        //小手截屏代码
-        return new Screentshot((maxX - minX) / 2, (maxY-minY) / 2, duplicateBitmap(bmp, minX, minY, maxX, maxY));
-    }
-
-
-    //    左minX        上minY        右maxX    下 maxY
-    public Bitmap duplicateBitmap(Bitmap bmpSrc, float left, float top, float right, float bottom) {
-        if (null == bmpSrc) {
-            return null;
-        }
-
-        Bitmap bmpDest = null;
-        //当bmpDest=null时
-        //        if (left == 0 && top == 0 && right == 0 && bottom == 0) {//全都等于0的情况下
-        //            bmpDest = Bitmap.createBitmap(SketchpadView.BITMAP_WIDTH, SketchpadView.BITMAP_HEIGHT, Bitmap.Config.RGB_565);
-        //        }
-
-        /*x：剪裁x方向的起始位置;    y：剪裁y方向的起始位置;    width：剪裁的宽度;   height：剪裁的高度;*/
-        //   else {
-        /**2016.12.20
-         * Auther:majin
-         * 修改在超出边界后报错问题
-         *
-         * */
-        float r_l = right - left;
-        float b_t = bottom - top;
-
-        if (left < 0) {
-            left = 0;
-        }
-        if (top < 0) {
-            top = 0;
-        }
-        if (left + r_l > bmpSrc.getWidth()) {
-            r_l = bmpSrc.getWidth() - left;
-        }
-        if (top + b_t > bmpSrc.getHeight()) {
-            b_t = bmpSrc.getHeight() - top;
-        }
-        bmpDest = Bitmap.createBitmap(bmpSrc, (int) left, (int) top, (int) (r_l), (int) (b_t));
-        // }
-
-        //        if (bmpDest != null) {
-        //            Canvas canvas = new Canvas(bmpDest);
-        //            canvas.save();
-        //            canvas.clipRect((int) left, (int) top, (int) right, (int) bottom);
-        //            canvas.restore();
-        //        }
-
-        return bmpDest;
-    }
 
     private void initData() {
         paint.setColor(Color.BLACK);
@@ -206,7 +138,6 @@ public class SketchpadView extends View implements IUndoRedoCommand {
         //设置是否使用图像抖动处理，会使图像颜色更加平滑饱满，更加清晰
         paint.setDither(true);
         setClickable(true);//设置为可点击才能获取到MotionEvent.ACTION_MOVE
-
     }
 
 
@@ -214,39 +145,27 @@ public class SketchpadView extends View implements IUndoRedoCommand {
         if (null != bitmap) {
             bitmap.recycle();
         }
-        bitmap = Bitmap.createBitmap(widthSize, heightSize, Bitmap.Config.RGB_565);
+        bitmap = Bitmap.createBitmap(widthSize, heightSize, Bitmap.Config.ARGB_8888);
         Paint paint = new Paint();
-        paint.setColor(Color.WHITE);
+        paint.setColor(Color.TRANSPARENT);
         canvas.setBitmap(bitmap);
-        canvas.drawRect(0, 0, bitmap.getWidth(), bitmap.getHeight(), paint);
+        // canvas.drawRect(0, 0, bitmap.getWidth(), bitmap.getHeight(), paint);
     }
 
 
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mode_sketchpad == MODE_SKETCHPAD.PEN || mode_sketchpad == MODE_SKETCHPAD.EASER) {
-            canvas.drawBitmap(bitmap, 0, 0, paint);
+            if (bitmap != null) {
+                //  RectF dst = new RectF(getLeft(), getTop(), getRight(), getBottom());
+                // Rect rst = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+                canvas.drawBitmap(bitmap, 0, 0, paint);
+                //   canvas.drawBitmap(bitmap, 0, 0, paint);
+            }
         } else if (mode_sketchpad == MODE_SKETCHPAD.HANLER) {
 
         }
     }
-
-    private ISketchpadDraw m_curTool = null;   //接口（绘制各种图形时都继承了接口）
-
-    public static final int STROKE_PEN      = 1;
-    public static final int STROKE_ERASER   = 2;
-    public static final int STROKE_PLYGON   = 3;
-    public static final int STROKE_RECT     = 4;
-    public static final int STROKE_CIRCLE   = 5;
-    public static final int STROKE_OVAL     = 6;
-    public static final int STROKE_LINE     = 7;
-    public static final int STROKE_SPRAYGUN = 8;
-    public static final int STROKE_PAINTPOT = 9;
-    private             int m_strokeType    = STROKE_PEN;   //  画笔状态
-
-    private static int m_strokeColor = Color.RED;   //画笔颜色红色
-    private static int m_penSize     = CommonDef.SMALL_PEN_WIDTH;// 画笔尺寸（默认为6）
-    private static int m_eraserSize  = CommonDef.LARGE_ERASER_WIDTH;   //橡皮默认宽度
 
 
     //画图形
@@ -301,21 +220,21 @@ public class SketchpadView extends View implements IUndoRedoCommand {
                     // ClearMempry.ClearMempry(this.context);//清理内存
                     //  DataCleanManager.cleanInternalCache(this.context);
                     setStrokeType(m_strokeType);//绘制图形如果是画笔状态
-                    minX = xTouch = event.getX();
-                    minY = yTouch = event.getY();
+                    minX = xTouch = (int) event.getX();
+                    minY = yTouch = (int) event.getY();
                     //Log.d(TAG, "ACTION_DOWN   xTouch   " + xTouch + "  yTouch " + yTouch);
                     this.updateMaxValue(xTouch, yTouch);
                     break;
                 case MotionEvent.ACTION_MOVE:
                     canvas.drawLine(xTouch, yTouch, event.getX(), event.getY(), paint);
-                    xTouch = event.getX();
-                    yTouch = event.getY();
+                    xTouch = (int) event.getX();
+                    yTouch = (int) event.getY();
                     this.updateMaxValue(xTouch, yTouch);
                     //  Log.d(TAG, "minX  " + minX + " minY " + minY + "  maxX " + maxX + "  maxY" + maxY);
                     invalidate();
                     break;
                 case MotionEvent.ACTION_UP:
-                    this.updateMaxValue(event.getX(), event.getY());
+                    this.updateMaxValue((int) event.getX(), (int) event.getY());
                     break;
             }
         } else if (mode_sketchpad == MODE_SKETCHPAD.HANLER) {
@@ -332,6 +251,27 @@ public class SketchpadView extends View implements IUndoRedoCommand {
 
 
         return true;
+    }
+
+
+    //更新当前的最大最小X Y(传入发的是当前坐标X Y)
+    private void updateMaxValue(int x, int y) {
+
+        if (this.maxX < x) {
+            this.maxX = x;
+        }
+        if (this.maxY < y) {
+            this.maxY = y;
+        }
+
+        if (this.minX > x) {
+            this.minX = x;
+        }
+        if (this.minY > y) {
+            this.minY = y;
+        }
+
+
     }
 
 
@@ -363,9 +303,6 @@ public class SketchpadView extends View implements IUndoRedoCommand {
         }
     }
 
-    public void setTagPenStete(MODE_PEN modePen) {
-        //  this.modePen = modePen;
-    }
 
     public void setPen(int type) {
         paint.setStrokeWidth(7);
@@ -451,6 +388,81 @@ public class SketchpadView extends View implements IUndoRedoCommand {
         return defaultHeight;
 
 
+    }
+    /***********************************************************************/
+
+    /** 获取切图（自己操作在屏幕上操作的） */
+    public Screentshot getCanvasSnapshot() {
+
+        if (minX == 0 || minY == 0 || maxX == 0 || maxY == 0) {//或||有一个成立则成立 全为false 则为false
+            return null;
+        }
+        setDrawingCacheEnabled(false);//销毁原来的cache(可以清理开启时的申请的内存)
+        setDrawingCacheEnabled(true);//开启cache
+        buildDrawingCache(true);//生成cache
+        Bitmap bmp = getDrawingCache(true);//获得可画视图的缓存
+
+        if (bmp == null) return null;
+        //小手截屏代码
+        return new Screentshot(300, 200, duplicateBitmap(bmp, minX, minY, maxX, maxY));
+    }
+
+    /**
+     * @param bmpSrc 呈现画图View的宽高
+     * @param left   左minX
+     * @param top    上minY
+     * @param right  右maxX
+     * @param bottom 下 maxY
+     * @return
+     */
+    public Bitmap duplicateBitmap(Bitmap bmpSrc, int left, int top, int right, int bottom) {
+        if (left == 0 && top == 0 && right == 0 && bottom == 0) {
+            return null;
+        }
+        if (null == bmpSrc) return null;
+
+        left = left - 5;
+        top = top - 5;
+        right = right + 5;
+        bottom = bottom + 5;
+
+        //        Log.d("m", "0--------bmpSrc.getWidth()  " + bmpSrc.getWidth() + "  bmpSrc.getHeight() " + bmpSrc.getHeight());
+        //        Log.d("m", "--------left  " + left + "  top " + top + "--------right  " + right + "  bottom " + bottom);
+
+        if (left < 0) {
+            left = 0;
+        }
+        if (top < 0) {
+            top = 0;
+        }
+        if (right > bmpSrc.getWidth()) {
+            right = bmpSrc.getWidth();
+        }
+        if (bottom > bmpSrc.getHeight()) {
+            bottom = bmpSrc.getHeight();
+        }
+
+        int mBitmapWidth = right - left;//裁剪图片的宽
+        int mBitmapHeight = bottom - top;//裁剪图片的高
+        //宽大大于高
+        //if (mBitmapWidth > mBitmapHeight) {
+        //            mBitmapHeight = top + mBitmapWidth;
+        //
+        //        } else {//宽小于高
+        //            mBitmapWidth = mBitmapHeight;
+        //        }
+
+        if (left + mBitmapWidth > bmpSrc.getWidth()) {
+            mBitmapWidth = bmpSrc.getWidth() - left;
+        }
+
+        if (top + mBitmapHeight > bmpSrc.getHeight()) {
+            mBitmapHeight = bmpSrc.getHeight() - top;
+        }
+
+        Bitmap intercept = Bitmap.createBitmap(bmpSrc, left, top, mBitmapWidth, mBitmapHeight);
+        minX = minY = maxX = maxY = 0;
+        return intercept;
     }
     /***********************************************************************/
 }

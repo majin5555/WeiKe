@@ -9,10 +9,12 @@
     <FrameLayout
         android:id="@+id/sketch_content_root"
         android:layout_width="match_parent"
+        android:background="@color/white_FFFFFF"
         android:layout_height="match_parent">
 
         <com.weike.customview.SketchpadView
             android:id="@+id/sketch_view"
+            android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -126,7 +128,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/transparent">
+        android:background="@android:color/transparent">
 
         <Chronometer
             android:id="@+id/chronometer"

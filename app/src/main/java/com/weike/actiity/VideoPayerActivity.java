@@ -106,8 +106,9 @@ public class VideoPayerActivity extends AppCompatActivity {
                     }
                 })
                 .setPlaySource(m1)
-                //  .setChargeTie(false, 60)
+                //.setChargeTie(false, 60)
                 .toggleFullScreen()
+                .doOnConfigurationChanged(false)
                 .startPlay();
 
 
@@ -149,9 +150,9 @@ public class VideoPayerActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (player != null) {
-            player.onConfigurationChanged(newConfig);
-        }
+        //        if (player != null) {
+        //            player.onConfigurationChanged(newConfig);
+        //        }
     }
 
     @Override

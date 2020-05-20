@@ -110,16 +110,16 @@ public class SketchpadMainActivity extends BaseActivity implements View.OnClickL
     @BindView(R.id.sketch_content_root)
     FrameLayout   sketchContentRoot;
 
-    public FrameLayout getSketchPicContentRoot() {
-        return sketchPicContentRoot;
+    public FrameLayout getSketchContentRoot() {
+        return sketchContentRoot;
     }
 
     /** 屏幕截图存放的viewRoot */
     @BindView(R.id.sketch_pic_content_root)
     FrameLayout sketchPicContentRoot;
 
-    public FrameLayout getSketchContentRoot() {
-        return sketchContentRoot;
+    public FrameLayout getSketchPicContentRoot() {
+        return sketchPicContentRoot;
     }
 
 
@@ -218,6 +218,12 @@ public class SketchpadMainActivity extends BaseActivity implements View.OnClickL
 
         mContral.setSketchpadView(mCurrentSketchpadView);
         mergeVideoTask = new MergeVideoTask(mContral);
+
+        //  Bitmap bitmap= BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher);
+
+        // MyRelativeLayout myRelativeLayout = new MyRelativeLayout(this);
+        // getSketchPicContentRoot().addView(myRelativeLayout);
+
     }
 
     private void setAllTag() {

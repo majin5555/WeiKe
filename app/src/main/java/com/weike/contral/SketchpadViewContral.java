@@ -137,12 +137,6 @@ public class SketchpadViewContral implements Runnable {
     public void setSketchpadViewMode(SketchpadView.MODE_SKETCHPAD mode) {
         sketchpadView.setSketchpadViewMode(mode);
 
-        if (mode == SketchpadView.MODE_SKETCHPAD.PEN) {
-            //((SketchpadMainActivity) context).getSketchContentRoot().bringToFront();
-
-        } else {
-
-        }
     }
 
     /**
@@ -174,16 +168,16 @@ public class SketchpadViewContral implements Runnable {
 
     public void addScreenshot(boolean isIntercept) {
         // Bitmap touchImg = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
-
-        scaleView = new MoveImagview(context);
+        MoveImagview moveImagview=new MoveImagview(context);
         if (isIntercept) { //屏幕截取
             Screentshot canvasSnapshot = sketchpadView.getCanvasSnapshot();
             if (canvasSnapshot != null) {
                 Log.d(TAG, "canvasSnapshot    " + canvasSnapshot);
-                scaleView.addSkechtpadView(canvasSnapshot);
-                ((SketchpadMainActivity) context).getSketchPicContentRoot().addView(scaleView);
-                Log.d(TAG, "((SketchpadMainActivity) context).getSketchContentRoot()  " + ((SketchpadMainActivity) context).getSketchContentRoot().getChildCount());
-
+                moveImagview.addSkechtpadView(canvasSnapshot);
+                ((SketchpadMainActivity) context).getSketchPicContentRoot().addView(moveImagview);
+                ((SketchpadMainActivity) context).getSketchPicContentRoot().bringToFront();
+                ((SketchpadMainActivity) context).getSketchPicContentRoot().bringChildToFront(moveImagview);
+               // Log.d(TAG, "((SketchpadMainActivity) context).getSketchContentRoot()  " + ((SketchpadMainActivity) context).getSketchContentRoot().getChildCount());
             } else {
                 Log.d(TAG, "canvasSnapshot null  ");
             }
@@ -206,9 +200,7 @@ public class SketchpadViewContral implements Runnable {
 
     }
 
-    public void setPenSate(SketchpadView.MODE_PEN modePen) {
-        // sketchpadView.setTagPenStete(modePen);
-    }
+
 
     /**
      * 设置画笔颜色
@@ -288,6 +280,7 @@ public class SketchpadViewContral implements Runnable {
                     Bitmap bitmap = convertViewToBitmap(view, sketchpadView.getWidthSize(), sketchpadView.getHeightSize());
                     mCurrentBitmap = bitmap;
                     mediaEncoderContral.getMediaVideoEncoder().flushFrame(bitmap);
+                    Thread.sleep(5);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.d(TAG, " 截屏幕核心模块 出错了 " + e.getMessage());
@@ -302,7 +295,7 @@ public class SketchpadViewContral implements Runnable {
     Canvas canvas = new Canvas();
 
     private Bitmap convertViewToBitmap(View view, int bitmapWidth, int bitmapHeight) {
-        Bitmap bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.RGB_565);
+        Bitmap bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
         canvas.setBitmap(bitmap);
         view.draw(canvas);
         return bitmap;

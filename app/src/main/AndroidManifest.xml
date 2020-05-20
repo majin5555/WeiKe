@@ -29,22 +29,14 @@
                 android:name="android.notch_support"
                 android:value="true" />
         </activity>
-        <!--
-            <activity android:name=".temp.MainActivity">
-                &lt;!&ndash;            <intent-filter>&ndash;&gt;
-                &lt;!&ndash;                <action android:name="android.intent.action.MAIN" />&ndash;&gt;
-
-                &lt;!&ndash;                <category android:name="android.intent.category.LAUNCHER" />&ndash;&gt;
-                &lt;!&ndash;            </intent-filter>&ndash;&gt;
-            </activity>
-        -->
+        <!-- 视频录制 -->
         <activity
             android:name=".actiity.SketchpadMainActivity"
             android:hardwareAccelerated="true"
             android:screenOrientation="landscape"
             android:theme="@style/FullscreenTheme"
             android:windowSoftInputMode="adjustPan|stateHidden"
-            tools:ignore="LockedOrientationActivity" /> <!-- 视频录制 -->
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".temp.VideoActivity"
             android:screenOrientation="landscape"
@@ -54,7 +46,7 @@
             android:name=".actiity.VideoPayerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
+            android:theme="@style/FullscreenTheme"
             tools:ignore="LockedOrientationActivity" />
 
         <!-- 录制音频 -->

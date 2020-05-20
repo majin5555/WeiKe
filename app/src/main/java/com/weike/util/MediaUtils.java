@@ -280,7 +280,7 @@ public class MediaUtils {
         contentValues.put(MediaStore.Video.Media.TITLE, file.getName());
         contentValues.put(MediaStore.Video.Media.DESCRIPTION, file.getName());
         contentValues.put(MediaStore.Video.Media.DISPLAY_NAME, file.getName());
-        contentValues.put(MediaStore.Video.VideoColumns.MIME_TYPE, "video/3gp");
+        contentValues.put(MediaStore.Video.VideoColumns.MIME_TYPE, "video/mp4");
         contentValues.put(MediaStore.Video.Media.DATA, file.getAbsolutePath());
         contentValues.put(MediaStore.Video.Media.SIZE, Long.valueOf(file.length()));
         //        contentValues.put("datetaken", Long.valueOf(paramLong));
