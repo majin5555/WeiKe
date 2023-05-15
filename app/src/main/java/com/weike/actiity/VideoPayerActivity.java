@@ -53,23 +53,6 @@ public class VideoPayerActivity extends AppCompatActivity {
         rootView = getLayoutInflater().from(this).inflate(R.layout.activity_h, null);
         setContentView(rootView);
         /**虚拟按键的隐藏方法*/
-    /*    rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
-            @Override
-            public void onGlobalLayout() {
-
-                //比较Activity根布局与当前布局的大小
-                int heightDiff = rootView.getRootView().getHeight() - rootView.getHeight();
-                if (heightDiff > 100) {
-                    //大小超过100时，一般为显示虚拟键盘事件
-                    rootView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-                } else {
-                    //大小小于100时，为不显示虚拟键盘或虚拟键盘隐藏
-                    rootView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
-                }
-            }
-        });*/
 
 
         VideoijkBean m1 = new VideoijkBean();
@@ -106,9 +89,10 @@ public class VideoPayerActivity extends AppCompatActivity {
                     }
                 })
                 .setPlaySource(m1)
-                //.setChargeTie(false, 60)
+                .setChargeTie(false, 60)
                 .toggleFullScreen()
                 .doOnConfigurationChanged(false)
+                .setOnlyFullScreen(true)
                 .startPlay();
 
 
@@ -150,9 +134,9 @@ public class VideoPayerActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        //        if (player != null) {
-        //            player.onConfigurationChanged(newConfig);
-        //        }
+                if (player != null) {
+                    player.onConfigurationChanged(newConfig);
+                }
     }
 
     @Override

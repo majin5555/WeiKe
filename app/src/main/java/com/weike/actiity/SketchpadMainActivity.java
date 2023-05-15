@@ -219,11 +219,6 @@ public class SketchpadMainActivity extends BaseActivity implements View.OnClickL
         mContral.setSketchpadView(mCurrentSketchpadView);
         mergeVideoTask = new MergeVideoTask(mContral);
 
-        //  Bitmap bitmap= BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher);
-
-        // MyRelativeLayout myRelativeLayout = new MyRelativeLayout(this);
-        // getSketchPicContentRoot().addView(myRelativeLayout);
-
     }
 
     private void setAllTag() {

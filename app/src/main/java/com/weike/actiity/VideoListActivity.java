@@ -2,6 +2,7 @@ package com.weike.actiity;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Build;
@@ -38,10 +39,15 @@ import butterknife.OnClick;
  * 视频列表
  */
 public class VideoListActivity extends BaseActivity implements SwipeRefreshLayout.OnRefreshListener {
+    public static void startVideoListActivity(Activity context, int requestCode) {
+        Intent intent = new Intent(context, VideoListActivity.class);
+        context.startActivityForResult(intent, requestCode);
+    }
+
+
     public static List<String> sNeedReqPermissions = new ArrayList<>();
 
     static {
-        sNeedReqPermissions.add(Manifest.permission.CAMERA);
         sNeedReqPermissions.add(Manifest.permission.CAMERA);
         sNeedReqPermissions.add(Manifest.permission.RECORD_AUDIO);
         sNeedReqPermissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);

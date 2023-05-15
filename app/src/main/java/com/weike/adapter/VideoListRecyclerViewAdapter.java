@@ -1,7 +1,11 @@
 package com.weike.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +18,7 @@ import com.weike.R;
 import com.weike.bean.MediaDataVideos;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -32,10 +37,10 @@ public class VideoListRecyclerViewAdapter extends RecyclerView.Adapter<VideoList
 
     private RecyclerView mRv;
 
-    private Context               mContext;
-    private int                   addDataPosition = - 1;
+    private Context mContext;
+    private int addDataPosition = -1;
     private List<MediaDataVideos> mediaDataVideos;
-    private boolean               isShow;
+    private boolean isShow;
 
 
     public VideoListRecyclerViewAdapter(Context context, RecyclerView recyclerView, List<MediaDataVideos> mediaDataVideos) {
@@ -81,21 +86,15 @@ public class VideoListRecyclerViewAdapter extends RecyclerView.Adapter<VideoList
      * @param position
      */
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, @SuppressLint("RecyclerView") int position) {
 
-        //  Log.d(TAG, " mediaDataVideos.get(position).getPath() " + mediaDataVideos.get(position).getPath());
-       // Log.d(TAG, "显示的缩略图  uri  " + mediaDataVideos.get(position).getThumbnailUri());
-        //  ImageLoaderManager.loadImage(mContext, mediaDataVideos.get(position).getThumbnailUri(), myViewHolder.mIv);
 
-        Glide.with(mContext).load(Uri.fromFile(new File(mediaDataVideos.get(position).getPath()))).into(myViewHolder.mIv);
-
-        //  Bitmap videoThumbnail = MediaUtils.getVideoThumbnail(UriTool.getFilePathByUri(mContext,mediaDataVideos.get(position).getThumbnailUri()));
-        //Log.d(TAG, "显示的缩略图  videoThumbnail" + videoThumbnail);
+        Glide.with(mContext).load(mediaDataVideos.get(position).getPath()).into(myViewHolder.mIv);
 
 
         myViewHolder.mTv.setText(mediaDataVideos.get(position).getName());
 
-        if (! isShow) {
+        if (!isShow) {
             myViewHolder.checkbox.setVisibility(View.GONE);
             myViewHolder.checkbox.setChecked(true);
 
@@ -126,6 +125,7 @@ public class VideoListRecyclerViewAdapter extends RecyclerView.Adapter<VideoList
 
     }
 
+
     /**
      * 返回数据数量
      *
@@ -149,10 +149,10 @@ public class VideoListRecyclerViewAdapter extends RecyclerView.Adapter<VideoList
 
     class MyViewHolder extends RecyclerView.ViewHolder {
 
-        View      mItemView;
+        View mItemView;
         ImageView mIv;
-        TextView  mTv;
-        CheckBox  checkbox;
+        TextView mTv;
+        CheckBox checkbox;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);

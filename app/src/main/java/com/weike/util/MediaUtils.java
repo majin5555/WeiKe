@@ -212,7 +212,6 @@ public class MediaUtils {
             String selection = null;
             String[] selectionArgs = null;
             String sortOrder = MediaStore.Video.Media.DATE_MODIFIED + " DESC";
-            // Log.d(TAG, "Android   Build.VERSION.SDK_INT  ---------  " + Build.VERSION.SDK_INT);
             //TODO  兼容Android Q和以下版本
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 selection = MediaStore.Video.Media.RELATIVE_PATH + "=? ";
@@ -228,21 +227,13 @@ public class MediaUtils {
             if (mCursor != null && mCursor.moveToFirst()) {
                 do {
                     int videoId = mCursor.getInt(mCursor.getColumnIndex(MediaStore.Video.Media._ID));
-                    //   Log.d(TAG, "videoId ---------  " + videoId);
                     // 获取视频的路径
                     String filePath = mCursor.getString(mCursor.getColumnIndex(MediaStore.Video.Media.DATA));
-                    //   Log.d(TAG, "filePath ---------  " + filePath);
                     String displayName = mCursor.getString(mCursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME));
-                    //    Log.d(TAG, "size  displayName---------  " + displayName);
-                    //   String albumPath = mCursor.getString(mCursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
-                    //  Log.d(TAG, "size  albumPath---------  " + albumPath);
-                    //     long duration = mCursor.getLong(mCursor.getColumnIndex(MediaStore.Video.Media.DURATION));
-                    //     Log.d(TAG, "size  duration---------  " + duration);
+
                     int timeIndex = mCursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
                     long date = mCursor.getLong(timeIndex) * 1000;
-                    Log.d(TAG, "uriVideo date ---------  " + date);
                     Uri uriVideo = Uri.parse("content://media/external/video/media/" + videoId);
-                    //   Log.d(TAG, "uriVideo uri ---------  " + uriVideo);
                     videoList.add(new MediaDataVideos(videoId, displayName, date, filePath, uriVideo));
 
                 } while (mCursor.moveToNext());

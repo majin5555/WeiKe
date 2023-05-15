@@ -2,6 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.weike">
+    <!-- 录像的权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 写内存卡的权限 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 打开照相机的权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 创建文件的权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission
+        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission
+        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:allowBackup="true"
@@ -12,24 +26,28 @@
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
         <activity
+            android:name=".actiity.WelcomeActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".actiity.VideoListActivity"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:windowSoftInputMode="adjustPan|stateHidden"
             tools:ignore="LockedOrientationActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
             <!-- 适配刘海全屏 -->
             <meta-data
                 android:name="android.notch_support"
                 android:value="true" />
-        </activity>
-        <!-- 视频录制 -->
+        </activity> <!-- 视频录制 -->
         <activity
             android:name=".actiity.SketchpadMainActivity"
             android:hardwareAccelerated="true"
@@ -45,26 +63,11 @@
         <activity
             android:name=".actiity.VideoPayerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait"
-            android:theme="@style/FullscreenTheme"
-            tools:ignore="LockedOrientationActivity" />
-
-        <!-- 录制音频 -->
+            android:screenOrientation="landscape" /> <!-- 适配刘海全屏 -->
+        <meta-data
+            android:name="android.notch_support"
+            android:value="true" /> <!-- 录制音频 -->
         <service android:name=".soundrecording.RecordingService" />
-    </application> <!-- 录像的权限 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 写内存卡的权限 -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- 打开照相机的权限 -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 创建文件的权限 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission
-        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <uses-permission
-        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
-        tools:ignore="ProtectedPermissions" />
+    </application>
 
 </manifest>

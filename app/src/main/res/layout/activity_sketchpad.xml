@@ -51,6 +51,7 @@
             android:layout_marginLeft="15dp"
             android:layout_toRightOf="@+id/exit"
             android:gravity="center"
+            android:visibility="invisible"
             android:src="@drawable/recall_2x" />
 
         <ImageView
@@ -61,6 +62,7 @@
             android:layout_marginLeft="@dimen/sketchpad_widget_marginLeft"
             android:layout_toRightOf="@+id/undo"
             android:gravity="center"
+            android:visibility="invisible"
             android:src="@drawable/redo_2x" />
 
         <LinearLayout
@@ -157,10 +159,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:visibility="invisible"
             android:src="@drawable/last_2x" />
 
         <ImageView
             android:id="@+id/next_pad"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -169,6 +173,7 @@
 
         <TextView
             android:id="@+id/remove_pad"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -184,6 +189,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:text="/"
+            android:visibility="invisible"
             android:textColor="@android:color/darker_gray" />
 
         <TextView
@@ -194,6 +200,7 @@
             android:layout_toEndOf="@+id/tv1"
             android:drawableEnd="@drawable/add_2x"
             android:text="1"
+            android:visibility="invisible"
             android:textColor="@android:color/darker_gray" />
     </RelativeLayout>
 

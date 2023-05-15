@@ -168,16 +168,16 @@ public class SketchpadViewContral implements Runnable {
 
     public void addScreenshot(boolean isIntercept) {
         // Bitmap touchImg = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
-        MoveImagview moveImagview=new MoveImagview(context);
+        MoveImagview moveImagview = new MoveImagview(context);
         if (isIntercept) { //屏幕截取
             Screentshot canvasSnapshot = sketchpadView.getCanvasSnapshot();
             if (canvasSnapshot != null) {
                 Log.d(TAG, "canvasSnapshot    " + canvasSnapshot);
-                moveImagview.addSkechtpadView(canvasSnapshot);
+                moveImagview.setImageBitamp(canvasSnapshot.getBitmap());
                 ((SketchpadMainActivity) context).getSketchPicContentRoot().addView(moveImagview);
                 ((SketchpadMainActivity) context).getSketchPicContentRoot().bringToFront();
                 ((SketchpadMainActivity) context).getSketchPicContentRoot().bringChildToFront(moveImagview);
-               // Log.d(TAG, "((SketchpadMainActivity) context).getSketchContentRoot()  " + ((SketchpadMainActivity) context).getSketchContentRoot().getChildCount());
+                // Log.d(TAG, "((SketchpadMainActivity) context).getSketchContentRoot()  " + ((SketchpadMainActivity) context).getSketchContentRoot().getChildCount());
             } else {
                 Log.d(TAG, "canvasSnapshot null  ");
             }
@@ -199,7 +199,6 @@ public class SketchpadViewContral implements Runnable {
         //        }
 
     }
-
 
 
     /**
