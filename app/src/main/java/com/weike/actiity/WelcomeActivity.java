@@ -37,8 +37,7 @@ public class WelcomeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mHandler.sendEmptyMessageDelayed(goMain, 1000);
-
+        mHandler.sendEmptyMessageDelayed(goMain, 3000);
     }
 
     @Override
