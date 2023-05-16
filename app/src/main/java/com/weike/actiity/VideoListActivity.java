@@ -5,12 +5,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,6 +32,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import baseLibrary.activity.BaseActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,27 +57,27 @@ public class VideoListActivity extends BaseActivity implements SwipeRefreshLayou
         sNeedReqPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
-    private             PermissionUtils mPermissionUtils;
-    public static final int             PERMISSION_RQUEST_CODE = 100;
+    private PermissionUtils mPermissionUtils;
+    public static final int PERMISSION_RQUEST_CODE = 100;
 
     private static final String TAG = "VideoListActivity";
 
     private static final int REQUEST_CODE = 0;
 
     @BindView(R.id.recycler_view)
-    RecyclerView       mRecyclerView;
+    RecyclerView mRecyclerView;
     @BindView(R.id.attach)
-    ImageView          mAttach;
+    ImageView mAttach;
     @BindView(R.id.edit)
-    TextView           mEdit;
+    TextView mEdit;
     @BindView(R.id.SwipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
 
     private boolean isEdedit;
 
     private VideoListRecyclerViewAdapter mAdapter;
-    private List<MediaDataVideos>        mediaDataVideos;
-    private CommomDialog                 commomDialog;
+    private List<MediaDataVideos> mediaDataVideos;
+    private CommomDialog commomDialog;
 
 
     @Override
@@ -143,8 +146,17 @@ public class VideoListActivity extends BaseActivity implements SwipeRefreshLayou
 
 
         mAdapter.setOnItemClickListener(position -> {
-            MediaDataVideos mediaDataVideos = VideoListActivity.this.mediaDataVideos.get(position);
-            VideoPayerActivity.startHPlayerActivity(VideoListActivity.this, 1000, mediaDataVideos);
+
+//            MediaDataVideos mediaDataVideos = VideoListActivity.this.mediaDataVideos.get(position);
+//            VideoPayerActivity.startHPlayerActivity(VideoListActivity.this, 1000, mediaDataVideos);
+//
+           //调用系统播放器
+            String extension = MimeTypeMap.getFileExtensionFromUrl(VideoListActivity.this.mediaDataVideos.get(position).getPath());
+            String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            Intent mediaIntent = new Intent(Intent.ACTION_VIEW);
+            mediaIntent.setDataAndType(VideoListActivity.this.mediaDataVideos.get(position).getVideoUri(), mimeType);
+            startActivity(mediaIntent);
+
         });
 
     }
@@ -169,13 +181,13 @@ public class VideoListActivity extends BaseActivity implements SwipeRefreshLayou
         switch (view.getId()) {
 
             case R.id.edit:
-                isEdedit = ! isEdedit;
+                isEdedit = !isEdedit;
                 if (isEdedit) {
                     mEdit.setText(R.string.videolist_delete);
-                   // mAttach.setVisibility(View.INVISIBLE);
+                    // mAttach.setVisibility(View.INVISIBLE);
                 } else {
                     mEdit.setText(R.string.videolist_edit);
-                  //  mAttach.setVisibility(View.VISIBLE);
+                    //  mAttach.setVisibility(View.VISIBLE);
                 }
 
                 if (deleteFlag()) {
